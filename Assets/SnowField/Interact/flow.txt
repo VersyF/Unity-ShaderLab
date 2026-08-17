@@ -1,0 +1,11 @@
+RenderTexture绘制
+
+射线绘制
+
+读取RenderTexture做顶点沿法线偏移
+
+处理RT绘制白色覆盖黑色问题
+
+根据RT计算Normal
+
+痕迹更新渐变恢复

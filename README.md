@@ -8,5 +8,5 @@ practice
 
 新建Snow文件夹
 
-
-
+8.17
+在snowfield中添加了rendertexture的绘制和顶点偏移
