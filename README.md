@@ -10,3 +10,6 @@ practice
 
 8.17
 在snowfield中添加了rendertexture的绘制和顶点偏移
+
+8.18
+增加了平面细分，添加了collider，尝试添加rt绘制mat失败

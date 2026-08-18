@@ -10,10 +10,17 @@ public class SF_DrawHeighMap : MonoBehaviour
     public Texture2D initHight;
     public Texture2D brush;
 
+    public Material brushMat;
+
     
     void Start()
     {
         Graphics.Blit(initHight, rt);
+
+        if(brushMat != null)
+        {
+            brushMat.SetTexture("Texture2D", brush);
+        }
     }
 
     // Update is called once per frame
@@ -24,14 +31,14 @@ public class SF_DrawHeighMap : MonoBehaviour
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out RaycastHit hit))
             {
-                // »ñÈ¡µã»÷´¦µÄ UV ×ø±ê (0-1)
+                // ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ UV ï¿½ï¿½ï¿½ï¿½ (0-1)
                 Vector2 uv = hit.textureCoord;
-                // ×ª»»³É RT ÉÏµÄÏñËØ×ø±ê
+                // ×ªï¿½ï¿½ï¿½ï¿½ RT ï¿½Ïµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                 int x = (int)(uv.x * rt.width);
-                // ×¢Òâ£ºUVµÄYÖáºÍÍ¼ÐÎ»æÖÆAPIµÄYÖá·½ÏòÏà·´£¬ÐèÒª·­×ª
+                // ×¢ï¿½â£ºUVï¿½ï¿½Yï¿½ï¿½ï¿½Í¼ï¿½Î»ï¿½ï¿½ï¿½APIï¿½ï¿½Yï¿½á·½ï¿½ï¿½ï¿½à·´ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½×ª
                 int y = (int)(rt.height - uv.y * rt.height);
 
-                // ÔÚÕâÀïÖ´ÐÐ»æÖÆ²Ù×÷...
+                // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö´ï¿½Ð»ï¿½ï¿½Æ²ï¿½ï¿½ï¿½...
                 Draw(x, y);
             }
         }
@@ -39,18 +46,18 @@ public class SF_DrawHeighMap : MonoBehaviour
 
     private void Draw(int x, int y)
     {
-        // ÉèÖÃ»æÖÆµÄÄ¿±êÎª rt
+        // ï¿½ï¿½ï¿½Ã»ï¿½ï¿½Æµï¿½Ä¿ï¿½ï¿½Îª rt
         RenderTexture.active = rt;
-        // ÖØÖÃ¾ØÕó£¬ÒÔ±ãÓÃÏñËØ×ø±ê»æÖÆ
+        // ï¿½ï¿½ï¿½Ã¾ï¿½ï¿½ï¿½ï¿½Ô±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         GL.LoadPixelMatrix(0, rt.width, rt.height, 0);
 
-        // ¼ÆËã»æÖÆÇøÓò£¬ÈÃ±ÊË¢ÖÐÐÄ¶Ô×¼µã»÷µã
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã±ï¿½Ë¢ï¿½ï¿½ï¿½Ä¶ï¿½×¼ï¿½ï¿½ï¿½ï¿½ï¿½
         int brushSize = brush.width;
         Rect rect = new Rect(x - brushSize / 2, y - brushSize / 2, brushSize, brushSize);
-        // ÓÃ Graphics.DrawTexture »­ÉÏ±ÊË¢ÎÆÀí
-        Graphics.DrawTexture(rect, brush);
+        // ï¿½ï¿½ Graphics.DrawTexture ï¿½ï¿½ï¿½Ï±ï¿½Ë¢ï¿½ï¿½ï¿½ï¿½
+        Graphics.DrawTexture(rect, brush, brushMat);
 
-        // ÖØÖÃ£¬²¢Ó¦ÓÃÐÞ¸Ä
+        // ï¿½ï¿½ï¿½Ã£ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½Þ¸ï¿½
         RenderTexture.active = null;
     }
 }
