@@ -142,7 +142,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rt: {fileID: 8400000, guid: 597687886263e7b4281ada578a752539, type: 2}
   initHight: {fileID: 2800000, guid: c2fa1686abef0e345b01c2b6229187a1, type: 3}
-  brush: {fileID: 2800000, guid: 0cacebdbf9bed3240a2f1659717b5918, type: 3}
+  brush: {fileID: 2800000, guid: 7b9bf23fd69e26a4499598d5529112b9, type: 3}
   brushMat: {fileID: 2100000, guid: b1e5adbf593ede1458b304c80f2eb7a8, type: 2}
 --- !u!64 &407801346
 MeshCollider:
@@ -497,13 +497,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 974533320}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.3764121, y: -0.15919052, z: 0.66663635, w: 0.6233525}
+  m_LocalRotation: {x: 0.23133506, y: -0.027650282, z: 0.72977686, w: 0.6427639}
   m_LocalPosition: {x: 0, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 42.962, y: 24.493, z: 103.608}
+  m_LocalEulerAnglesHint: {x: 19.74, y: 18.721, z: 100.54}
 --- !u!114 &974533323
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -732,7 +732,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: ca30090d3eb39dc48ae7750b4b9c3012, type: 2}
+      objectReference: {fileID: 2100000, guid: e7afeb058dce7ba45a5612a007f6aa7d, type: 2}
     - target: {fileID: 919132149155446097, guid: cc6203cd4831cda4398a30d24722836d,
         type: 3}
       propertyPath: m_Name
