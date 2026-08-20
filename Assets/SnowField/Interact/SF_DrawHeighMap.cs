@@ -55,7 +55,7 @@ public class SF_DrawHeighMap : MonoBehaviour
         int brushSize = brush.width;
         Rect rect = new Rect(x - brushSize / 2, y - brushSize / 2, brushSize, brushSize);
         // �� Graphics.DrawTexture ���ϱ�ˢ����
-        Graphics.DrawTexture(rect, brush);
+        Graphics.DrawTexture(rect, brush, brushMat);
 
         // ���ã���Ӧ���޸�
         RenderTexture.active = null;

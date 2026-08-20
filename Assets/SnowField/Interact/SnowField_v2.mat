@@ -134,7 +134,7 @@ Material:
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
-    - _HightNormalSampleOff: 0.009
+    - _HightNormalSampleOff: 0.023
     - _HightNormalScale: 0.2
     - _HightScale: 0.12
     - _Metallic: 0
