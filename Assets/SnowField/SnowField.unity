@@ -136,7 +136,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rt: {fileID: 8400000, guid: 597687886263e7b4281ada578a752539, type: 2}
   initHight: {fileID: 2800000, guid: c2fa1686abef0e345b01c2b6229187a1, type: 3}
-  brush: {fileID: 2800000, guid: 1dc1cd31a54677d409a5efcb2604ef07, type: 3}
+  brush: {fileID: 2800000, guid: 7b9bf23fd69e26a4499598d5529112b9, type: 3}
   brushMat: {fileID: 2100000, guid: b1e5adbf593ede1458b304c80f2eb7a8, type: 2}
 --- !u!64 &407801346
 MeshCollider:
@@ -699,7 +699,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: ca30090d3eb39dc48ae7750b4b9c3012, type: 2}
+  - {fileID: 2100000, guid: e7afeb058dce7ba45a5612a007f6aa7d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
