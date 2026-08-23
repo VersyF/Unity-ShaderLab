@@ -1,5 +1,5 @@
-#ifndef HLSL_NC_ShadowCore
-#define HLSL_NC_ShadowCore
+#ifndef HLSL_NC_ShadowCoe
+#define HLSL_NC_ShadowCoe
 
 void LambertShadow_float
 (
@@ -15,6 +15,7 @@ void LambertShadow_float
 void V2_LightMap_float
 (
     UnityTexture2D _LightMap,
+    float3 _VertexColor,
     UnitySamplerState _Sampler,
     float2 uv,
     float3 _LightDirOS,

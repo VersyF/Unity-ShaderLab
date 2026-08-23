@@ -19,3 +19,13 @@ practice
 
 8.20
 SF:rt绘制添加了mat参数，手写unlit可以正常处理透明度，shadergraph的mat仍然不行。
+
+8.21
+NC:导入荧模型，添加lambert光照
+
+8.22
+NC:添加LightMap
+
+8.23
+NC:添加基本Ramp采样
+
