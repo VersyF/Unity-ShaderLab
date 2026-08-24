@@ -121,11 +121,11 @@ Material:
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
-    - _Lerp: 2.14
-    - _LoopNum: 45.81
+    - _Lerp: 0.1
+    - _LoopNum: 1
     - _Metallic: 0
     - _OcclusionStrength: 1
-    - _OffScale: 0.001
+    - _OffScale: 0.05
     - _Parallax: 0.005
     - _QueueControl: 0
     - _QueueOffset: 0
