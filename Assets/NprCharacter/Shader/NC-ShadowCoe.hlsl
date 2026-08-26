@@ -20,12 +20,13 @@ void V2_LightMap_float
     float2 uv,
     float3 _LightDirOS,
     float3 _NormalOS,
-    out float output
+    out float2 output
 )
 {
-    float amb = SAMPLE_TEXTURE2D(_LightMap, _Sampler, uv).g;
+    float4 amb = SAMPLE_TEXTURE2D(_LightMap, _Sampler, uv);
     float lambert = saturate(dot(-_LightDirOS, _NormalOS) / 2 + 0.5);
-    output = 0.5 * amb + 0.5 * lambert;
+    output.x = 0.5 * amb.g + 0.5 * lambert;
+    output.y = amb.a;           //output y分量存储LightMap 的 Alpha 值
     return;
 }
 

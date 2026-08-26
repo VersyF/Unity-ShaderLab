@@ -35,3 +35,5 @@ IG:微调视差逻辑，支持仅双层叠加
 8.25
 NC:赶进度，SDF报错
 
+8.26
+NC:添加LightMap.a选择ramp贴图行；修复repeat采样、mipmap设置带来的效果问题。
