@@ -34,12 +34,16 @@ void V1_RampSamper_float
     float _LightMapAlpha,
     float _BrightArea,      //0 - 1
     UnitySamplerState _Sampler,
+    float _UseRamp2,
+    float _UseRamp3,
+    float _UseRamp4,
+    float _UseRamp5,
     out float3 output
 )
 {
     //Calculate uv
     float u = saturate(_BrightArea + _ShadowCoe);
-    float v = RampShadowID(_LightMapAlpha, 1, 1, 1, 1, 1, 2, 3, 4, 5);
+    float v = RampShadowID(_LightMapAlpha, _UseRamp2, _UseRamp3, _UseRamp4, _UseRamp5, 1, 2, 3, 4, 5);
     float2 uv = float2(u,v);
 
     //Samp

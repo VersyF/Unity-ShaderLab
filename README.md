@@ -37,3 +37,6 @@ NC:赶进度，SDF报错
 
 8.26
 NC:添加LightMap.a选择ramp贴图行；修复repeat采样、mipmap设置带来的效果问题。
+
+8.27
+NC:添加sdf面部阴影（还没搞懂）

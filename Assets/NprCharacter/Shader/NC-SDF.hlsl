@@ -14,11 +14,12 @@ void V1_SDFSampler_float
     out float output
 )
 {
-    headUpDir = (0, 1 ,0);
-    headRightDir = (1, 0, 0);
-    headForwardDir = (0, 0, 1);
+    headUpDir = float3(0, 1 ,0);
+    headRightDir = float3(1, 0, 0);
+    headForwardDir = float3(0, 0, 1);
 
     float4 shadowMask = SAMPLE_TEXTURE2D(_ShadowMask, _Sampler, uv);
+    _Light = -normalize(_Light);
 
     //sdf模板
     half3 LpU = dot(_Light, headUpDir) / pow(length(headUpDir), 2) * headUpDir; // 计算光源方向在面部上方的投影
@@ -31,7 +32,7 @@ void V1_SDFSampler_float
     half sdfLeft = SAMPLE_TEXTURE2D(_SDF, _Sampler, half2(1 - uv.x, uv.y)).r; // 左侧距离场
     half sdfRight = SAMPLE_TEXTURE2D(_SDF, _Sampler, uv).r; // 右侧距离场
     half mixSdf = lerp(sdfRight, sdfLeft, exposeRight); // 采样SDF纹理
-    half sdf = step(mixValue, mixSdf); // 计算硬边界阴影
+    float sdf = step(mixValue, mixSdf); // 计算硬边界阴影
     sdf = lerp(0, sdf, step(0, dot(LpHeadHorizon, headForwardDir))); // 计算右侧阴影
     sdf *= shadowMask.g; // 使用G通道控制阴影强度
     sdf = lerp(sdf, 1, shadowMask.a); // 使用A通道作为阴影遮罩

@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Lumine Face
-  m_Shader: {fileID: -6465566751694194690, guid: 419839e0d9ac6124cb412973d47eeb8f,
+  m_Shader: {fileID: -6465566751694194690, guid: 6536e32184282f04f926bbbba53686b9,
     type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -70,6 +70,14 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _RampColor:
         m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SDF_Map:
+        m_Texture: {fileID: 2800000, guid: b655742081e3cd0468899686f61866b8, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ShadowMask:
+        m_Texture: {fileID: 2800000, guid: d5164b5a2229a1c4aba7a25dd88c4cee, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SpecGlossMap:
