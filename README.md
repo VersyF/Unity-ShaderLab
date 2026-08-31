@@ -48,5 +48,8 @@ NC:添加阴影投射，但投射的骨骼阴影
 NC:添加Furina；裙背面渲染
 
 8.30
-IG:重新分析原神至冬冰面解决方案；在blender摄制图像序列导入unity作为3d纹理
-IG:新建代码shader，添加MainTex和法线贴图采样；
+IG:v2 重新分析原神至冬冰面解决方案；在blender摄制图像序列导入unity作为3d纹理
+IG:v2 新建代码shader，添加MainTex和法线贴图采样；
+
+8.31
+IG:v2 添加lambert漫反射、高光

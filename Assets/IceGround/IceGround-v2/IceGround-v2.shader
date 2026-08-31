@@ -7,6 +7,7 @@ Shader "IG/IceGround-v2"
 
         _IceColor("_IceColor", Color) = (1, 1, 1, 1)
         _NormalScale ("_NormalScale", float) = 1
+        _HighLightScale("_HighLightScale", float ) = 100
     }
     
     SubShader
@@ -51,12 +52,14 @@ Shader "IG/IceGround-v2"
                 float3 tangentWS : TEXCOORD1;
                 float3 bitangentWS : TEXCOORD2;
                 float2 uv : TEXCOORD3;
+                float3 positionWS : TEXCOORD4;
             };
             
 		    CBUFFER_START(UnityPerMaterial) 
                 float4 _MainTex_ST;
                 float4 _Color;
                 float _NormalScale;
+                float _HighLightScale;
             CBUFFER_END
 
 
@@ -66,6 +69,7 @@ Shader "IG/IceGround-v2"
                 //Position Trans
                 VertexPositionInputs positionInputs = GetVertexPositionInputs(i.positionOS.xyz);
                 o.positionHCS = positionInputs.positionCS;
+                o.positionWS = positionInputs.positionWS;
 
                 //Normal Trans
                 VertexNormalInputs normalInputs = GetVertexNormalInputs(i.normalOS, i.tangentOS);
@@ -80,7 +84,7 @@ Shader "IG/IceGround-v2"
             
 
             half4 frag(Varyings i) : SV_Target {
-                half finalColor;
+                half4 finalColor;
                 half4 baseColor;
                 
                 baseColor = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv);
@@ -100,8 +104,19 @@ Shader "IG/IceGround-v2"
                 Light mainLight = GetMainLight();
                 float3 mainLightDir = normalize(mainLight.direction);
                 float lambert = saturate( dot(normalWS, mainLightDir));
+                float halfLambert = lambert / 2  + 0.5;
 
-                finalColor *= lambert;
+                finalColor *= halfLambert;
+
+                //Highlight
+                float3 cameraPos = GetCameraPositionWS();
+                float3 viewDir = normalize(cameraPos - i.positionWS );
+                float3 VaddL = normalize(viewDir + mainLightDir);
+                
+                float highLight = saturate(dot(normalWS , VaddL));
+                highLight = pow(highLight, _HighLightScale);
+
+                finalColor += highLight;
 
                 return finalColor;
             }
