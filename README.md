@@ -53,3 +53,6 @@ IG:v2 新建代码shader，添加MainTex和法线贴图采样；
 
 8.31
 IG:v2 添加lambert漫反射、高光
+
+9.1
+IG:尝试采样CameraOpaqueTexture，失败

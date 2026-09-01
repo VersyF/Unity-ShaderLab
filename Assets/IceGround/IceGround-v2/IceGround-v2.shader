@@ -15,6 +15,8 @@ Shader "IG/IceGround-v2"
         Tags 
         { 
             "RenderPipeline" = "UniversalPipeline" 
+            "Queue" = "Transparent"
+            "RenderType" = "Transparent"
         } 
         
         Pass
@@ -27,7 +29,7 @@ Shader "IG/IceGround-v2"
             #pragma fragment frag
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
-            
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareOpaqueTexture.hlsl"
 
             TEXTURE2D(_MainTex);       
             SAMPLER(sampler_MainTex);   
@@ -87,8 +89,19 @@ Shader "IG/IceGround-v2"
                 half4 finalColor;
                 half4 baseColor;
                 
+                //baseColor
                 baseColor = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv);
                 finalColor = baseColor;
+
+                //SampleOpaqueTex
+                float2 uv =(i.positionHCS.xy / i.positionHCS.w) * 0.5 + 0.5;
+                #if UNITY_UV_STARTS_AT_TOP
+                    uv.y = 1.0 - uv.y;
+                #endif
+
+                half3 sceneColor = SampleSceneColor(uv);                //内置采样Scenecolor函数
+
+                finalColor = float4(finalColor.x * sceneColor.x, finalColor.y * sceneColor.y, finalColor.z * sceneColor.z, 1);
 
                 //TBN
                 float3x3 TBN = float3x3(i.tangentWS, i.bitangentWS, i.normalWS);
@@ -118,7 +131,7 @@ Shader "IG/IceGround-v2"
 
                 finalColor += highLight;
 
-                return finalColor;
+                return float4(sceneColor,1 );
             }
 
             ENDHLSL
