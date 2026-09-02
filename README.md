@@ -56,3 +56,7 @@ IG:v2 添加lambert漫反射、高光
 
 9.1
 IG:尝试采样CameraOpaqueTexture，失败
+
+9.2
+新建FireEffect
+FE:粒子效果制作卡通火焰
