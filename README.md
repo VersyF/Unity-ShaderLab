@@ -60,3 +60,7 @@ IG:尝试采样CameraOpaqueTexture，失败
 9.2
 新建FireEffect
 FE:粒子效果制作卡通火焰
+
+9.3
+新建SE
+SE:简易snow粒子系统，相机跟随，视角转动无法跟随
