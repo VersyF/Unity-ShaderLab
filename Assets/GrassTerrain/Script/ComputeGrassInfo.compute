@@ -1,0 +1,33 @@
+#pragma kernel CSMain
+
+struct GrassBlade
+{
+    float3 position;
+};
+uint _Resolution;
+float _GrassSpacing;
+float _Random;
+
+AppendStructuredBuffer<GrassBlade> outputBuffer;
+
+float2 GetHash(float2 p)
+{
+    float t = dot(p, float2(73, 12));
+    float2 q = float2(t, t * 1.618);
+    return frac(sin(q));
+}
+
+[numthreads(8,8,1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+    GrassBlade grassblade;
+    if (id.x < _Resolution && id.y < _Resolution)
+    {
+        grassblade.position = float3(id.x, 0, id.y) * _GrassSpacing;
+        float2 offset = GetHash(id.xy);
+        offset = offset * 2 - 1;
+        grassblade.position.xz += offset * _Random; 
+    }
+    outputBuffer.Append(grassblade);
+    
+}

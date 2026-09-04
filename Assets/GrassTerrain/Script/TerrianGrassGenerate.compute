@@ -1,0 +1,70 @@
+#pragma kernel CSMain
+
+StructuredBuffer<float4> vertexBuffer;
+StructuredBuffer<float4> colorBuffer;
+StructuredBuffer<int> terrainTriangleBuffer;
+
+AppendStructuredBuffer<float3> outputBuffer;
+
+float _GrassClip;
+float4x4 _LocalToWorld;
+float4x4 _VP_Matrix;
+float _ClipOffset;
+
+//should be grassed
+bool isGrass(float3 a, float3 b, float3 c)
+{
+    return ((a.r + b.r + c.r) / 3) > _GrassClip;
+}
+
+bool isInViewField(float3 position)
+{
+    //Trans
+    float4 positionHClip = mul(_VP_Matrix, float4(position, 1));
+    
+    //judge
+    positionHClip.w += _ClipOffset;
+    return (
+            positionHClip.z < 0 ||
+            positionHClip.z > positionHClip.w ||
+            positionHClip.x < -positionHClip.w ||
+            positionHClip.x > positionHClip.w ||
+            positionHClip.y < -positionHClip.w ||
+            positionHClip.y > positionHClip.w
+        ) ? false : true;
+    
+    return true;
+}
+
+[numthreads(64, 1, 1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+    
+    //vertex index
+    int index1 = terrainTriangleBuffer[id.x * 3];
+    int index2 = terrainTriangleBuffer[id.x * 3 + 1];
+    int index3 = terrainTriangleBuffer[id.x * 3 + 2];
+   
+    
+    //position
+    float3 p1 = vertexBuffer[index1].xyz;
+    float3 p2 = vertexBuffer[index2].xyz;
+    float3 p3 = vertexBuffer[index3].xyz;
+    
+    //color
+    float3 c1 = colorBuffer[index1].xyz;
+    float3 c2 = colorBuffer[index2].xyz;
+    float3 c3 = colorBuffer[index3].xyz;
+    
+    if (isGrass(c1, c2, c3))
+    {
+        float3 position = p1;           //average pre
+        position = mul(_LocalToWorld, float4(position, 1.0f)).xyz;
+        if (isInViewField(position))
+        {
+            outputBuffer.Append(position);
+        }
+    }
+    
+}
+
