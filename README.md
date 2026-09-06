@@ -67,3 +67,9 @@ SE:简易snow粒子系统，相机跟随，视角转动无法跟随
 
 9.4
 迁入VolumeCloud、GrassTerrain
+
+9.5
+VC:添加射线探测球形渲染shader
+
+9.6
+VC:添加支持VolumeMap的射线探测shader
