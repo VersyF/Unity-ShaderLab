@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Cloud
-  m_Shader: {fileID: -6465566751694194690, guid: b9d6a272e43f86d40a822f28866b0e54,
+  m_Shader: {fileID: -6465566751694194690, guid: 3fa2a0d05a920a34ba7a198ca370bc9e,
     type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -56,6 +56,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _NoiseTex:
+        m_Texture: {fileID: 11700000, guid: 2527928136f364649a400c12dc3fb7c2, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -86,6 +90,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _Texture3DAsset_522d51732d1a4a4ebe77858c17f47044_Out_0_Texture3D:
         m_Texture: {fileID: 11700000, guid: e492748744410a7489ca42d78675d9f0, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _VCLightRayMarchCustomFunction_ee67314d30aa470b9ae9f2da9a704ff2_New_0_Texture3D:
+        m_Texture: {fileID: 11700000, guid: 2527928136f364649a400c12dc3fb7c2, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _raymarchCustomFunction_91e4ebe2590c4f5d8339ac26b4254fd9_volumeTex_5_Texture3D:
@@ -153,13 +161,13 @@ Material:
     - _WorkflowMode: 1
     - _ZWrite: 1
     - _darknessThreshold: 0.14
-    - _densityScale: 0.33
+    - _densityScale: 0.06
     - _lightAbsorb: 0.11
     - _lightStepSize: 0.06
     - _numLightSteps: 16.9
     - _numSteps: 64
     - _stepNum: 32
-    - _stepScale: 0.06
+    - _stepScale: 0.05
     - _stepSize: 0.02
     - _transmittance: 0.11
     m_Colors:
@@ -169,7 +177,7 @@ Material:
     - _Offset: {r: 0.49, g: 0.53, b: 0.47, a: 0}
     - _ShadowColor: {r: 0.33789802, g: 0.547043, b: 0.6574746, a: 0}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
-    - _offset: {r: 0.5, g: 0.7, b: 0.61, a: 0}
+    - _offset: {r: 0.5, g: 0.57, b: 0.6, a: 0}
     - _sphere: {r: 0, g: 0, b: 0, a: 0.55}
   m_BuildTextureStacks: []
 --- !u!114 &9171221415727772328

@@ -73,3 +73,6 @@ VC:添加射线探测球形渲染shader
 
 9.6
 VC:添加支持VolumeMap的射线探测shader
+
+9.7
+VC:添加支持光照的射线探测shader；光照计算存在部分问题尚未定位
