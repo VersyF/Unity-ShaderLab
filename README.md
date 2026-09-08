@@ -76,3 +76,7 @@ VC:添加支持VolumeMap的射线探测shader
 
 9.7
 VC:添加支持光照的射线探测shader；光照计算存在部分问题尚未定位
+
+9.8
+VC:添加draknessThreadShold阴影钳制；添加暴露调参接口
+VC:修复光照方向问题，居然是cuntomfunction类型配置错误！
