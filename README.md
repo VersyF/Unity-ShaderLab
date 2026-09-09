@@ -80,3 +80,7 @@ VC:添加支持光照的射线探测shader；光照计算存在部分问题尚�
 9.8
 VC:添加draknessThreadShold阴影钳制；添加暴露调参接口
 VC:修复光照方向问题，居然是cuntomfunction类型配置错误！
+
+9.9
+VC:
+添加Noise,乘Density输入模拟风对云的扰动：目前在片元着色器通过立方体uv采样噪声，存在接缝

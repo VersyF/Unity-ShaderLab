@@ -20,7 +20,7 @@ Material:
   m_CustomRenderQueue: -1
   stringTagMap: {}
   disabledShaderPasses: []
-  m_LockedProperties: 
+  m_LockedProperties: _lightStepScale
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
@@ -76,6 +76,10 @@ Material:
         m_Texture: {fileID: 11700000, guid: 6ae8c94fbe8102048a10b63480a1bb26, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_bd58dc2dce474bc9a1b03a3660db715f_Texture_1_Texture2D:
+        m_Texture: {fileID: 2800000, guid: 8d6511007643bd5459c92e00925bc771, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _SpecGlossMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -92,7 +96,15 @@ Material:
         m_Texture: {fileID: 11700000, guid: e492748744410a7489ca42d78675d9f0, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _VCLightRayMarchBackupCustomFunction_ee67314d30aa470b9ae9f2da9a704ff2_New_0_Texture3D:
+        m_Texture: {fileID: 11700000, guid: 2527928136f364649a400c12dc3fb7c2, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _VCLightRayMarchCustomFunction_ee67314d30aa470b9ae9f2da9a704ff2_New_0_Texture3D:
+        m_Texture: {fileID: 11700000, guid: 2527928136f364649a400c12dc3fb7c2, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _raymarchCustomFunction_763a012260824f3a90c672b108ab2683_volumeTex_6_Texture3D:
         m_Texture: {fileID: 11700000, guid: 2527928136f364649a400c12dc3fb7c2, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -160,16 +172,20 @@ Material:
     - _Transmittance: 0.9
     - _WorkflowMode: 1
     - _ZWrite: 1
+    - _darknessThreadshold: 0.14
     - _darknessThreshold: 0.14
-    - _densityScale: 0.06
-    - _lightAbsorb: 0.11
+    - _densityScale: 0.75
+    - _lightAbsorb: 1.12
+    - _lightStepNum: 8
+    - _lightStepScale: 0.02
     - _lightStepSize: 0.06
     - _numLightSteps: 16.9
     - _numSteps: 64
     - _stepNum: 32
-    - _stepScale: 0.05
+    - _stepScale: 0.02
     - _stepSize: 0.02
     - _transmittance: 0.11
+    - _windDensityScale: 0.7
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
@@ -177,7 +193,9 @@ Material:
     - _Offset: {r: 0.49, g: 0.53, b: 0.47, a: 0}
     - _ShadowColor: {r: 0.33789802, g: 0.547043, b: 0.6574746, a: 0}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
-    - _offset: {r: 0.5, g: 0.57, b: 0.6, a: 0}
+    - _brightColor: {r: 1, g: 1, b: 1, a: 0}
+    - _darkColor: {r: 0.5366678, g: 0.65909046, b: 0.8490566, a: 0}
+    - _offset: {r: 0.5, g: 0.5, b: 0.5, a: 0}
     - _sphere: {r: 0, g: 0, b: 0, a: 0.55}
   m_BuildTextureStacks: []
 --- !u!114 &9171221415727772328
