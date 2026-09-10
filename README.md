@@ -2,6 +2,8 @@
 
 practice
 
+2026
+
 8.16
 
 新建Odette文件夹，拆分并导入奥黛塔模型，连接纹理
@@ -9,15 +11,19 @@ practice
 新建Snow文件夹
 
 8.17
+
 在snowfield中添加了rendertexture的绘制和顶点偏移
 
 8.18
+
 增加了平面细分，添加了collider，尝试添加rt绘制mat失败
 
 8.19
+
 增加了根据高度图生成法线，光照效果似乎还存在一些问题；将凹陷shader逻辑和之前的亮片、基础色shader整合。
 
 8.20
+
 SF:rt绘制添加了mat参数，手写unlit可以正常处理透明度，shadergraph的mat仍然不行。
 
 8.21
@@ -78,9 +84,22 @@ VC:添加支持VolumeMap的射线探测shader
 VC:添加支持光照的射线探测shader；光照计算存在部分问题尚未定位
 
 9.8
+
 VC:添加draknessThreadShold阴影钳制；添加暴露调参接口
 VC:修复光照方向问题，居然是cuntomfunction类型配置错误！
 
 9.9
+
 VC:
 添加Noise,乘Density输入模拟风对云的扰动：目前在片元着色器通过立方体uv采样噪声，存在接缝
+
+9.10
+
+Boid2:
+添加boids生成、随机散布
+
+Boid2:
+为Boids添加“分离”能力!
+(角度转换问题排查了好久QAQ)；
+转向速度受到离自己最近物体的距离影响
+![alt text](MarkdownPicture/Snipaste_2026-09-10_17-42-41.png)
