@@ -103,3 +103,13 @@ Boid2:
 (角度转换问题排查了好久QAQ)；
 转向速度受到离自己最近物体的距离影响
 ![alt text](MarkdownPicture/Snipaste_2026-09-10_17-42-41.png)
+
+9.11
+
+Boid2:
+
+重构了boids脚本结构：将分离、对齐、聚合分离为三个函数，统一进Observe函数，三个函数对总方向的影响更清晰，更易于调整；
+
+为Boids添加“对齐”能力；
+为Boids添加"聚合"能力！
+![alt text](MarkdownPicture/image.png)
