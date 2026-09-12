@@ -10,6 +10,8 @@ public class Boid : MonoBehaviour
     public float turnSpeedMax = 100f;
     public float viewDistance = 2;
 
+    
+
     Rigidbody2D rb;
     Transform transform;
 
@@ -51,7 +53,8 @@ public class Boid : MonoBehaviour
     {
         Vector2 forwardVector = this.transform.up;
         Vector2 separateVec = forwardVector;
-        Vector2 alignVec = new Vector2(0, 0);
+        Vector2 alignVec = forwardVector;
+        Vector2 cohensionVec = forwardVector;
 
         Vector2 targetVec = new Vector2(0, 0);
 
@@ -60,6 +63,7 @@ public class Boid : MonoBehaviour
         foreach (GameObject go in boidsInView)
         {
             if (go == this.gameObject) continue;
+            if ((go.transform.position - this.transform.position).magnitude > viewDistance) continue;
 
             separateVec += Separate(go);
             alignVec += Align(go);
@@ -69,10 +73,14 @@ public class Boid : MonoBehaviour
         alignVec = alignVec.normalized;
 
         //综合分离与对齐
-        targetVec = Vector2.Lerp(separateVec, alignVec, currentNearestDis);
+        //targetVec = Vector2.Lerp(separateVec, alignVec, currentNearestDis / viewDistance);
 
         //加入聚合
-        targetVec = Vector2.Lerp(targetVec, Cohension(boidsInView), currentNearestDis);
+        cohensionVec = Cohension(boidsInView);
+        //targetVec = Vector2.Lerp(targetVec, Cohension(boidsInView), currentNearestDis / viewDistance);
+
+        targetVec = separateVec * Boid2_CreateBoids.instance.separateScale + alignVec * Boid2_CreateBoids.instance.alignScale + cohensionVec * Boid2_CreateBoids.instance.cohensionScale;
+        targetVec.Normalize();
 
         //根据向量旋转
         Vector2 worldUp = new Vector2(0, 1);

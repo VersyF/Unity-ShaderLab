@@ -129,3 +129,6 @@ MonoBehaviour:
   speed: 2
   turnSpeedMax: 180
   viewDistance: 3
+  separateScale: 0.093
+  alignScale: 0.048
+  cohensionScale: 1

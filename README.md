@@ -113,3 +113,10 @@ Boid2:
 为Boids添加“对齐”能力；
 为Boids添加"聚合"能力！
 ![alt text](MarkdownPicture/image.png)
+
+9.12
+
+Boid2:
+为Boid Observe函数添加viewDistance的范围剔除；
+调整分离、对齐、聚合的整合逻辑：用加权求和。权重变量统一在Creator对象管理，支持实时调整。
+![alt text](MarkdownPicture/image-1.png)![alt text](MarkdownPicture/image-2.png)![alt text](MarkdownPicture/image-3.png)

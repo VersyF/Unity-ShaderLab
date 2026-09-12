@@ -16,6 +16,13 @@ public class Boid2_CreateBoids : MonoBehaviour
 
     public System.Collections.Generic.List<GameObject> boidsList = new();
 
+    [Range(0f, 1f)]
+    public float separateScale = 1;
+    [Range(0f, 1f)]
+    public float alignScale = 1;
+    [Range(0f, 1f)]
+    public float cohensionScale = 1;
+
     // Start is called before the first frame update
     void Start()
     {
