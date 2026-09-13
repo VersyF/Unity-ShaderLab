@@ -23,6 +23,10 @@ public class Boid2_CreateBoids : MonoBehaviour
     [Range(0f, 1f)]
     public float cohensionScale = 1;
 
+    [Range(0f, 180f)]
+    public float viewAngle = 180;
+    public float viewDistance = 2;
+
     // Start is called before the first frame update
     void Start()
     {

@@ -119,4 +119,23 @@ Boid2:
 Boid2:
 为Boid Observe函数添加viewDistance的范围剔除；
 调整分离、对齐、聚合的整合逻辑：用加权求和。权重变量统一在Creator对象管理，支持实时调整。
+
 ![alt text](MarkdownPicture/image-1.png)![alt text](MarkdownPicture/image-2.png)![alt text](MarkdownPicture/image-3.png)
+
+9.13
+Boid2:
+
+预测试添加简易根据角度散点的脚本
+
+添加视野角度范围判断，与距离判断统一为IsOutOfView函数
+
+添加Gizmos开关，viewDistance和viewAngle整合到Creator实时调整
+![alt text](MarkdownPicture/image-4.png)
+
+修复Bug：视野为0时会绕中心旋转，因为Cohension函数循环逻辑中，如果全部被跳过，默认是（0，0）- position，导致指向世界中心
+；修复-添加count基数，为0时return零向量；
+修复Bug：Cohension中变量使用了targetVec，和全局targetVec冲突；
+
+经过测试viewAngle和viewDistance可以符合预期地影响boids行为；
+
+再次融合了距离影响Separate权重的功能；

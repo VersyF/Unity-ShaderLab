@@ -3,12 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class Boid : MonoBehaviour
 {
+    public bool DRAW_GIZMOS = false;
+
     public float speed = 2;
     public float turnSpeedMax = 100f;
-    public float viewDistance = 2;
+    
+    
 
     
 
@@ -19,8 +23,11 @@ public class Boid : MonoBehaviour
     private Vector2 topLeft;
     private Vector2 bottomRight;
     private float turnSpeed = 0;
+    private Vector2 targetVec = new Vector2(0, 0);
 
     float currentNearestDis;
+
+    Boid2_CreateBoids manager;
     void Start()
     {
         //赋予初始速度
@@ -34,6 +41,9 @@ public class Boid : MonoBehaviour
         //
         topLeft = Boid2_CreateBoids.instance.topLeft;
         bottomRight = Boid2_CreateBoids.instance.bottomRight;
+
+        //获取单例
+        manager = Boid2_CreateBoids.instance;
 
     }
     
@@ -56,14 +66,14 @@ public class Boid : MonoBehaviour
         Vector2 alignVec = forwardVector;
         Vector2 cohensionVec = forwardVector;
 
-        Vector2 targetVec = new Vector2(0, 0);
+        targetVec = new Vector2(0, 0);
 
-        currentNearestDis = viewDistance;           //记录最近距离
+        currentNearestDis = manager.viewDistance;           //记录最近距离
 
         foreach (GameObject go in boidsInView)
         {
             if (go == this.gameObject) continue;
-            if ((go.transform.position - this.transform.position).magnitude > viewDistance) continue;
+            if (IsOutOfView(go)) continue;
 
             separateVec += Separate(go);
             alignVec += Align(go);
@@ -79,7 +89,8 @@ public class Boid : MonoBehaviour
         cohensionVec = Cohension(boidsInView);
         //targetVec = Vector2.Lerp(targetVec, Cohension(boidsInView), currentNearestDis / viewDistance);
 
-        targetVec = separateVec * Boid2_CreateBoids.instance.separateScale + alignVec * Boid2_CreateBoids.instance.alignScale + cohensionVec * Boid2_CreateBoids.instance.cohensionScale;
+        targetVec = Mathf.Lerp(manager.separateScale, 0, currentNearestDis) * separateVec + alignVec * manager.alignScale + cohensionVec * manager.cohensionScale;
+        //targetVec = forwardVector;
         targetVec.Normalize();
 
         //根据向量旋转
@@ -99,7 +110,7 @@ public class Boid : MonoBehaviour
         float distanceTense = Mathf.Clamp01( Mathf.Exp(-distance));                  //确定最大影响范围
         float pushScale = Mathf.Lerp(0, 3, distanceTense);                  //根据距离确定影响forward改变的程度
 
-        turnSpeed = Mathf.Lerp(0, turnSpeedMax, Mathf.Clamp01((viewDistance - currentNearestDis) / viewDistance));
+        turnSpeed = Mathf.Lerp(0, turnSpeedMax, Mathf.Clamp01((manager.viewDistance - currentNearestDis) / manager.viewDistance));
 
         return pushScale * distanceVec.normalized;
     }
@@ -126,15 +137,40 @@ public class Boid : MonoBehaviour
     Vector2 Cohension(List<GameObject> partners)
     {
         Vector2 averagePos = Vector2.zero;
+        int parnersInViewNum = 0;
         foreach (GameObject partner in partners)
         {
+            if (partner == this.gameObject) continue;
+            if (IsOutOfView(partner)) continue;
             averagePos += new Vector2(partner.transform.position.x, partner.transform.position.y);
+            parnersInViewNum += 1;
         }
-        averagePos /= partners.Count;
-        Vector2 targetVec = averagePos - new Vector2(this.transform.position.x, this.transform.position.y);
-        return targetVec.normalized;
+        if (parnersInViewNum > 0)
+        {
+            averagePos /= parnersInViewNum;
+            Vector2 cohensionVec = averagePos - new Vector2(this.transform.position.x, this.transform.position.y);
+            return cohensionVec.normalized;
+        }
+        else
+        {
+            return transform.up;
+        }
+
+            
     }
 
+    bool IsOutOfView(GameObject partner)
+    {
+        Vector2 distanceVec = partner.transform.position - this.transform.position;
+        bool isOutOfDst = distanceVec.magnitude > manager.viewDistance;
+
+        float angle = Vector2.Angle(this.transform.up, distanceVec);
+
+        bool isOutOfAngle = angle >= manager.viewAngle;
+
+        return isOutOfDst || isOutOfAngle;
+        
+    }
     void CheckEdge()
     {
         Vector2 position = transform.position;
@@ -157,5 +193,22 @@ public class Boid : MonoBehaviour
         }
 
         this.transform.position = position;
+    }
+
+    void OnDrawGizmos()
+    {
+        if (DRAW_GIZMOS)
+        {
+            // 设置线条颜色
+            Gizmos.color = Color.red;
+
+            Gizmos.DrawLine(transform.position, transform.position + transform.up);
+
+            Gizmos.color = Color.blue;
+
+            Gizmos.DrawLine(transform.position, transform.position + new Vector3(targetVec.x, targetVec.y, transform.position.z));
+
+        }
+        
     }
 }
