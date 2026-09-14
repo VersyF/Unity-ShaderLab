@@ -79,6 +79,7 @@ public class Boid : MonoBehaviour
             alignVec += Align(go);
         }
 
+        turnSpeed = Mathf.Lerp(0, turnSpeedMax, Mathf.Clamp01((manager.viewDistance - currentNearestDis) / manager.viewDistance));
         separateVec = separateVec.normalized;
         alignVec = alignVec.normalized;
 
@@ -90,6 +91,8 @@ public class Boid : MonoBehaviour
         //targetVec = Vector2.Lerp(targetVec, Cohension(boidsInView), currentNearestDis / viewDistance);
 
         targetVec = Mathf.Lerp(manager.separateScale, 0, currentNearestDis) * separateVec + alignVec * manager.alignScale + cohensionVec * manager.cohensionScale;
+        currentNearestDis = Mathf.Clamp01(-Mathf.Exp(- (currentNearestDis - manager.nearestDst) * 5) + 1);
+        targetVec = Vector2.Lerp(separateVec, targetVec, currentNearestDis);
         //targetVec = forwardVector;
         targetVec.Normalize();
 
@@ -108,9 +111,9 @@ public class Boid : MonoBehaviour
         float distance = distanceVec.magnitude;
         currentNearestDis = Mathf.Min(distance, currentNearestDis);                     //记录这次最近距离
         float distanceTense = Mathf.Clamp01( Mathf.Exp(-distance));                  //确定最大影响范围
-        float pushScale = Mathf.Lerp(0, 3, distanceTense);                  //根据距离确定影响forward改变的程度
+        float pushScale = Mathf.Lerp(0, 3, distanceTense);                  //根据距离确定 ‘这个partner’ 影响forward改变的程度
 
-        turnSpeed = Mathf.Lerp(0, turnSpeedMax, Mathf.Clamp01((manager.viewDistance - currentNearestDis) / manager.viewDistance));
+        
 
         return pushScale * distanceVec.normalized;
     }

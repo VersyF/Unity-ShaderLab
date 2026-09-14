@@ -139,3 +139,48 @@ Boid2:
 经过测试viewAngle和viewDistance可以符合预期地影响boids行为；
 
 再次融合了距离影响Separate权重的功能；
+
+9.14
+Boid2：
+
+观察发现视野角度减小，可以让队形趋向于长线
+![alt text](MarkdownPicture/image-5.png)
+
+相反视野角度越大，越倾向于聚团
+![alt text](MarkdownPicture/image-6.png)
+
+修复了一些bug
+
+添加了最小距离限制，通过Exp指数函数控制距离影响系数的衰减曲线，lerp根据影响系数在separate和总target间插值
+
+![alt text](MarkdownPicture/image-9.png)
+
+x代表currentNearestDis - manager.nearestDst，
+得到的衰减如下图，最近同伴的距离越接近设定的边界阈值，系数接近0速度越快：
+
+![alt text](MarkdownPicture/image-8.png)
+
+通过调整x旁的系数，可以控制边界避让的敏感程度
+
+![alt text](MarkdownPicture/image-11.png)
+
+![alt text](MarkdownPicture/image-10.png)
+
+再把这个系数用于Lerp插值，得到越接近越倾向于优先separate的避让策略
+
+![alt text](MarkdownPicture/image-7.png)
+
+可以看到保持边界的效果不错，较少出现两个boid重叠而行的情况。但需要注意的是，如果视野角度viewAngle过小（如30 + 30 = 60），可能看不到身旁的同伴，最好保证不小于70度的半侧视野角度；
+
+Boid-PlotDot：
+
+试验散布点分布在球表面，先在2d平面做均匀散布实验
+![alt text](MarkdownPicture/image-18.png)
+![alt text](MarkdownPicture/image-17.png)
+
+接着尝试极坐标转换，在球体表面散点
+
+![alt text](MarkdownPicture/image-14.png)
+![alt text](MarkdownPicture/image-16.png)
+
+被数学的力量震撼到了

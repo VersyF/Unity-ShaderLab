@@ -27,6 +27,8 @@ public class Boid2_CreateBoids : MonoBehaviour
     public float viewAngle = 180;
     public float viewDistance = 2;
 
+    public float nearestDst = 0.2f;
+
     // Start is called before the first frame update
     void Start()
     {

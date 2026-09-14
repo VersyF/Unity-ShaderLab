@@ -126,7 +126,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db85b6aa079e9ee45a276e806d24d19a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DRAW_GIZMOS: 0
   speed: 2
   turnSpeedMax: 180
-  viewDistance: 3
-  viewAngle: 120
