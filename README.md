@@ -184,3 +184,20 @@ Boid-PlotDot：
 ![alt text](MarkdownPicture/image-16.png)
 
 被数学的力量震撼到了
+
+9.15
+Boid3：
+
+新建Boid3D；完成建模导入；完成边界生成和随机撒点；完成boid前进逻辑；完成核心能力；
+
+初步完成3D转换，等待进一步验证有没有Bug
+![alt text](MarkdownPicture/image-20.png)
+
+将聚合和分离的视野拆分成两个视野，聚合视野更大，似乎更有感觉
+
+![alt text](MarkdownPicture/image-21.png)
+![alt text](MarkdownPicture/image-22.png)
+![alt text](MarkdownPicture/image-23.png)
+![alt text](MarkdownPicture/image-24.png)
+![alt text](MarkdownPicture/image-26.png)
+![alt text](MarkdownPicture/image-27.png)
