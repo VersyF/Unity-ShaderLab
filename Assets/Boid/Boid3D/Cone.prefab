@@ -124,3 +124,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 086272a52c167954c95b9a82812b0abc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DRAW_GIZMOS: 0

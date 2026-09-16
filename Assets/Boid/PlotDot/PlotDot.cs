@@ -55,12 +55,9 @@ public class PlotDot : MonoBehaviour
         {
             float dst = Mathf.Pow(i / (dotNum - 1f), pow);
             float angle = angleOff * i * 2 * Mathf.PI;
-            float x = Mathf.Cos(angle) * dst;
-            float y = Mathf.Sin(angle) * dst;
 
-            float r = dst;
             float alpha = dst * Mathf.PI;
-            float beta = Mathf.Atan2(y, x);
+            float beta = angle;
 
             float x3d = Mathf.Sin(alpha) * Mathf.Cos(beta);
             float y3d = Mathf.Sin(alpha) * Mathf.Sin(beta);

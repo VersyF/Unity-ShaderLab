@@ -244,10 +244,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   VIEW_3D: 1
-  dotNum: 1000
+  dotNum: 5000
   angleOff: 0.618
   radius: 0.01
-  pow: 0.88
+  pow: 0.44
 --- !u!4 &945389388
 Transform:
   m_ObjectHideFlags: 0

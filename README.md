@@ -201,3 +201,38 @@ Boid3：
 ![alt text](MarkdownPicture/image-24.png)
 ![alt text](MarkdownPicture/image-26.png)
 ![alt text](MarkdownPicture/image-27.png)
+
+9.16
+Boid3：
+
+实现物体前方区域射线（基于PlotDot）
+![alt text](MarkdownPicture/image-28.png)
+
+实现障碍物规避
+![alt text](MarkdownPicture/image-29.png)
+
+融合进整体策略
+![alt text](MarkdownPicture/image-30.png)
+
+整体能避障，但会出现“猛回头”撞墙，推测是正前方检测不到障碍物后，避障权重归零，方向瞬间转向三要素策略
+
+·调大SphereCast半径
+
+·尝试从外圈开始检测（放弃）
+
+·降低boids转向速度
+
+·提高obstacle探测距离
+
+·target和避障的插值用幂函数作为系数
+![alt text](MarkdownPicture/image-31.png)
+
+发现降低转向速度的效果明显
+
+boid会倾向于往立方体角落钻，给boid障碍物检测额外添加一个身后的射线
+
+钻角落情况明显改善
+![alt text](MarkdownPicture/image-32.png)
+·boid方向抖动问题没解决
+
+·boid钻球问题没解决

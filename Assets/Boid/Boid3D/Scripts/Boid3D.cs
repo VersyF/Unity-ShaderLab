@@ -8,6 +8,7 @@ public class Boid3D : MonoBehaviour
 {
     //Gizmos toggle
     public bool DRAW_GIZMOS = false;
+    public bool DRAW_GIZMOS2 = false;
 
     private BoidsManager3D manager;
     private Rigidbody rb;
@@ -101,7 +102,8 @@ public class Boid3D : MonoBehaviour
         }
 
         //转向速度受距离影响
-        float turnSpeed = Mathf.Lerp(0, manager.boidTurnSpeedMax, Mathf.Clamp01((manager.boidViewDst - currentNearestDis) / manager.boidViewDst));
+        //逻辑待优化
+        float turnSpeed = Mathf.Lerp(manager.boidTurnSpeedMax / 2, manager.boidTurnSpeedMax, Mathf.Clamp01((manager.boidViewDst - currentNearestDis) / manager.boidViewDst));
 
         //取模
         separateVec = separateVec.normalized;
@@ -117,9 +119,17 @@ public class Boid3D : MonoBehaviour
         targetVec = manager.separateScale * separateVec + alignVec * manager.alignScale + cohensionVec * manager.cohensionScale;
         currentNearestDis = Mathf.Clamp01(-Mathf.Exp(-(currentNearestDis - manager.nearestDst) * 20) + 1);
         targetVec = Vector3.Lerp(separateVec, targetVec, currentNearestDis);
+        targetVec = targetVec.normalized;
+
+        //加入避障
+        float obstacleNearestDst;
+        Vector3 avoidObstacle = FindBestNoObstacleWay(out obstacleNearestDst);
+        float coe = obstacleNearestDst / manager.boidObstacleViewDst;
+        targetVec = Vector3.Lerp(avoidObstacle, targetVec, Mathf.Pow(coe, 3));
+        turnSpeed = Mathf.Lerp(turnSpeed * 3, turnSpeed, obstacleNearestDst / manager.boidObstacleViewDst);
+
 
         currentTarget = targetVec;
-
 
         //targetVec = forwardVector;
         targetVec.Normalize();
@@ -214,7 +224,57 @@ public class Boid3D : MonoBehaviour
 
             Gizmos.DrawLine(transform.position, transform.position + currentTarget);
 
-        }
+            
 
+        }
+        if (DRAW_GIZMOS2)
+        {
+            foreach (Vector3 dir in manager.boidDetectDirections)
+            {
+                Gizmos.DrawLine(transform.position, transform.position + transform.TransformDirection(dir));
+            }
+        }
+        
+
+    }
+
+    Vector3 FindBestNoObstacleWay(out float nearest)
+    {
+        nearest = manager.boidObstacleViewDst;
+        RaycastHit hit;
+        int obstacleMask = LayerMask.GetMask("Obstacle");
+
+        Vector3 bestDir = Vector3.zero;
+        float bestDistance = 0;
+
+        foreach (Vector3 d in manager.boidDetectDirections)
+        {
+            //转换到世界空间
+            Vector3 dir = transform.TransformDirection(d);
+            if (Physics.SphereCast(this.transform.position, 0.1f, dir, out hit, manager.boidObstacleViewDst, obstacleMask))
+            {
+                if (hit.distance < nearest)
+                {
+                    nearest = hit.distance;
+                }
+                //出现碰撞距离更长的，替换
+                if (hit.distance > bestDistance)
+                {
+                    bestDir = dir;
+                    bestDistance = hit.distance;
+                }
+            }
+            else
+            {
+                //出现没碰撞的，直接返回
+                return dir;
+            }
+        }
+        Vector3 behind = transform.TransformDirection(new Vector3(0, 0, -1));
+        if (! Physics.SphereCast(this.transform.position, 0.1f, behind, out hit, manager.boidObstacleViewDst, obstacleMask))
+        {
+            return behind;
+        }
+        return bestDir;
     }
 }

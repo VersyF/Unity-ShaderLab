@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.Rendering.DebugUI.Table;
 
 public class BoidsManager3D : MonoBehaviour
 {
@@ -24,6 +25,7 @@ public class BoidsManager3D : MonoBehaviour
     public float boidViewAngle = 180f;
     public float boidTurnSpeedMax = 60f;
     public float nearestDst = 0.2f;
+    public float boidObstacleViewDst = 0.1f;
 
     [Range(0f, 1f)]
     public float separateScale = 1;
@@ -41,6 +43,7 @@ public class BoidsManager3D : MonoBehaviour
     public float maxZ;
 
     public System.Collections.Generic.List<GameObject> boidsList = new();
+    public List<Vector3> boidDetectDirections = new();
 
     void Awake()
     {
@@ -48,6 +51,7 @@ public class BoidsManager3D : MonoBehaviour
     }
     void Start()
     {
+        InitDetectDirectionsList(200, boidDetectDirections);
         CreateBoids(true);
     }
 
@@ -128,5 +132,23 @@ public class BoidsManager3D : MonoBehaviour
 
         minZ = center.z - areaLength / 2f;
         maxZ = center.z + areaLength / 2f;
+    }
+
+    void InitDetectDirectionsList(int dirNum, List<Vector3> list)
+    {
+        for (int i = 0; i < dirNum; i++)
+        {
+            float dst = Mathf.Pow(i , 0.44f);
+            float angle = 0.618f * i * 2 * Mathf.PI;
+
+            float alpha = dst * Mathf.PI;
+            float beta = angle;
+
+            float x = Mathf.Sin(alpha) * Mathf.Cos(beta);
+            float y = Mathf.Sin(alpha) * Mathf.Sin(beta);
+            float z = Mathf.Cos(alpha);
+
+            list.Add(new Vector3(x, y, z));
+        }
     }
 }
