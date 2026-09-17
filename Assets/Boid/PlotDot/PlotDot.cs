@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class PlotDot : MonoBehaviour
@@ -89,4 +90,6 @@ public class PlotDot : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawSphere(axis + this.transform.position, radius);
     }
+
 }
+

@@ -17,6 +17,11 @@ public class Boid3D : MonoBehaviour
     private Vector3 currentTarget;
     private List<GameObject> boidsInView;
 
+    //Debug
+    public float currentNearestObstacleDebug = 0;
+    public float coeDebug = 0;
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -124,9 +129,11 @@ public class Boid3D : MonoBehaviour
         //加入避障
         float obstacleNearestDst;
         Vector3 avoidObstacle = FindBestNoObstacleWay(out obstacleNearestDst);
+        currentNearestObstacleDebug = obstacleNearestDst;
         float coe = obstacleNearestDst / manager.boidObstacleViewDst;
-        targetVec = Vector3.Lerp(avoidObstacle, targetVec, Mathf.Pow(coe, 3));
-        turnSpeed = Mathf.Lerp(turnSpeed * 3, turnSpeed, obstacleNearestDst / manager.boidObstacleViewDst);
+        coeDebug = coe;
+        targetVec = Vector3.Lerp(avoidObstacle, targetVec, coe);
+        //turnSpeed = Mathf.Lerp(turnSpeed * 3, turnSpeed, obstacleNearestDst / manager.boidObstacleViewDst);
 
 
         currentTarget = targetVec;
@@ -270,11 +277,29 @@ public class Boid3D : MonoBehaviour
                 return dir;
             }
         }
-        Vector3 behind = transform.TransformDirection(new Vector3(0, 0, -1));
-        if (! Physics.SphereCast(this.transform.position, 0.1f, behind, out hit, manager.boidObstacleViewDst, obstacleMask))
+
+        //四周检测
+        List<Vector3> surround = new();
+        surround.Add( transform.TransformDirection(new Vector3(0, 1, 0)));
+        surround.Add(transform.TransformDirection(new Vector3(1, 0, 0)));
+        surround.Add(transform.TransformDirection(new Vector3(0, -1, 0)));
+        surround.Add(transform.TransformDirection(new Vector3(-1, 0, 0)));
+        surround.Add(transform.TransformDirection(new Vector3(0, 0, -1)));
+        foreach (Vector3 dir in surround)
         {
-            return behind;
+            if (Physics.SphereCast(this.transform.position, 0.1f, dir, out hit, manager.boidObstacleViewDst, obstacleMask))
+            {
+                if (hit.distance < nearest)
+                {
+                    nearest = hit.distance;
+                }
+            }
+            else
+            {
+                return dir;
+            }
         }
+        
         return bestDir;
     }
 }

@@ -138,7 +138,7 @@ public class BoidsManager3D : MonoBehaviour
     {
         for (int i = 0; i < dirNum; i++)
         {
-            float dst = Mathf.Pow(i , 0.44f);
+            float dst = Mathf.Pow(i / (2000 - 1f), 0.44f);
             float angle = 0.618f * i * 2 * Mathf.PI;
 
             float alpha = dst * Mathf.PI;
