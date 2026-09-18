@@ -16,6 +16,7 @@ public class Boid3D : MonoBehaviour
     //Infomation
     private Vector3 currentTarget;
     private List<GameObject> boidsInView;
+    private float speed;
 
     //Debug
     public float currentNearestObstacleDebug = 0;
@@ -28,6 +29,7 @@ public class Boid3D : MonoBehaviour
         manager = BoidsManager3D.instance;
         rb = GetComponent<Rigidbody>();
         boidsInView = manager.boidsList;
+        speed = manager.boidSpeed;
     }
 
     // Update is called once per frame
