@@ -243,3 +243,16 @@ Boid3：
 修复一些bug，减少抖动；添加上下左右检测；
 
 CloudIsland:创建菲涅尔+高光材质；
+
+9.18
+
+ML:新建MaterialLab
+
+ML:添加lambert、bling-phong光照模型
+
+9.19
+
+Boid:
+
+添加领导者权重：权重越高，从众欲望越低，吸引力越高
+![alt text](MarkdownPicture/image-33.png)

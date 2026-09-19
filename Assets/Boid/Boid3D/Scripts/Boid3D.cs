@@ -17,6 +17,8 @@ public class Boid3D : MonoBehaviour
     private Vector3 currentTarget;
     private List<GameObject> boidsInView;
     private float speed;
+    [Range(0,1f)]
+    public float leaderWeight = 0f;                     //领导者权重，0-1，影响自己从众程度和其他boid追随欲望
 
     //Debug
     public float currentNearestObstacleDebug = 0;
@@ -99,14 +101,20 @@ public class Boid3D : MonoBehaviour
             if (go == this.gameObject) continue;
             if (IsOutOfView(go, manager.boidViewDst)) continue;
 
+            //领导者权重
+            Boid3D partner = go.GetComponent<Boid3D>();
+            float partnerLeaderOff = 1 + partner.leaderWeight * 100;
+
             //Separation
             Vector4 seperateResult = Separate(go);
             separateVec += new Vector3(seperateResult.x, seperateResult.y, seperateResult.z);
             currentNearestDis = Mathf.Min(seperateResult.w, currentNearestDis);
 
             //Alignment
-            alignVec += Align(go);
+            alignVec += Align(go) * partnerLeaderOff;
         }
+        //加入聚合
+        cohensionVec = Cohension(boidsInView);
 
         //转向速度受距离影响
         //逻辑待优化
@@ -119,14 +127,16 @@ public class Boid3D : MonoBehaviour
         //综合分离与对齐
         //targetVec = Vector2.Lerp(separateVec, alignVec, currentNearestDis / viewDistance);
 
-        //加入聚合
-        cohensionVec = Cohension(boidsInView);
+        
 
         //targetVec计算
         targetVec = manager.separateScale * separateVec + alignVec * manager.alignScale + cohensionVec * manager.cohensionScale;
         currentNearestDis = Mathf.Clamp01(-Mathf.Exp(-(currentNearestDis - manager.nearestDst) * 20) + 1);
         targetVec = Vector3.Lerp(separateVec, targetVec, currentNearestDis);
         targetVec = targetVec.normalized;
+
+        //从众欲望
+        targetVec = Vector3.Lerp(targetVec, this.transform.forward, leaderWeight);
 
         //加入避障
         float obstacleNearestDst;
@@ -173,13 +183,18 @@ public class Boid3D : MonoBehaviour
     Vector3 Cohension(List<GameObject> partners)
     {
         Vector3 averagePos = Vector3.zero;
-        int parnersInViewNum = 0;
+        float parnersInViewNum = 0;
         foreach (GameObject partner in partners)
         {
             if (partner == this.gameObject) continue;
             if (IsOutOfView(partner, manager.boidViewDstConhension)) continue;
-            averagePos += partner.transform.position;
-            parnersInViewNum += 1;
+
+            //领导者权重
+            Boid3D partnerScript = partner.GetComponent<Boid3D>();
+            float partnerLeaderOff = 1 + partnerScript.leaderWeight * 100;
+
+            averagePos += partner.transform.position * partnerLeaderOff;
+            parnersInViewNum += 1 * partnerLeaderOff;
         }
         if (parnersInViewNum > 0)
         {
