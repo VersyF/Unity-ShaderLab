@@ -770,7 +770,7 @@ MonoBehaviour:
   areaWidth: 4.61
   areaHeight: 1.91
   boidSpeed: 0.6
-  boidsNum: 50
+  boidsNum: 10
   boidViewDst: 0.5
   boidViewDstConhension: 3
   boidViewDstSeparate: 0.5

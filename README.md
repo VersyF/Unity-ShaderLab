@@ -256,3 +256,7 @@ Boid:
 
 添加领导者权重：权重越高，从众欲望越低，吸引力越高
 ![alt text](MarkdownPicture/image-33.png)
+
+9.20
+
+CI:进行一次初步整合场景
