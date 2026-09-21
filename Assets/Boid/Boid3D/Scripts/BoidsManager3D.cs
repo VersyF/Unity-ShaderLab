@@ -8,6 +8,12 @@ public class BoidsManager3D : MonoBehaviour
     public GameObject boidPrefab;
     public static BoidsManager3D instance;
 
+    //出生点
+    public Vector3 spawnCenter = Vector3.zero;
+    public float spawnAreaLength = 2f;
+    public float spawnAreaWidth = 2f;
+    public float spawnAreaHeight = 2f;
+
     //区域范围
     public float areaLength = 2f;
     public float areaWidth = 2f;
@@ -35,6 +41,15 @@ public class BoidsManager3D : MonoBehaviour
     public float cohensionScale = 1;
 
     //暴露统一边界参数
+    //spaw
+    public float SminY;
+    public float SmaxY;
+    public float SminX;
+    public float SmaxX;
+    public float SminZ;
+    public float SmaxZ;
+
+    //edge
     public float minY;
     public float maxY;
     public float minX;
@@ -95,6 +110,37 @@ public class BoidsManager3D : MonoBehaviour
         Gizmos.DrawLine(p100, p101);
         Gizmos.DrawLine(p110, p111);
         Gizmos.DrawLine(p010, p011);
+
+        //SpawnArea
+        Gizmos.color = Color.red;
+        // 8 个顶点
+        p000 = new Vector3(SminX, SminY, SminZ);
+        p100 = new Vector3(SmaxX, SminY, SminZ);
+        p110 = new Vector3(SmaxX, SmaxY, SminZ);
+        p010 = new Vector3(SminX, SmaxY, SminZ);
+
+        p001 = new Vector3(SminX, SminY, SmaxZ);
+        p101 = new Vector3(SmaxX, SminY, SmaxZ);
+        p111 = new Vector3(SmaxX, SmaxY, SmaxZ);
+        p011 = new Vector3(SminX, SmaxY, SmaxZ);
+
+        // 前面 (Z = minZ)
+        Gizmos.DrawLine(p000, p100);
+        Gizmos.DrawLine(p100, p110);
+        Gizmos.DrawLine(p110, p010);
+        Gizmos.DrawLine(p010, p000);
+
+        // 后面 (Z = maxZ)
+        Gizmos.DrawLine(p001, p101);
+        Gizmos.DrawLine(p101, p111);
+        Gizmos.DrawLine(p111, p011);
+        Gizmos.DrawLine(p011, p001);
+
+        // 连接前后
+        Gizmos.DrawLine(p000, p001);
+        Gizmos.DrawLine(p100, p101);
+        Gizmos.DrawLine(p110, p111);
+        Gizmos.DrawLine(p010, p011);
     }
 
     void CreateBoids(bool randomRotation)
@@ -103,13 +149,13 @@ public class BoidsManager3D : MonoBehaviour
         for (int i = 0; i < boidsNum; i++)
         {
             // 1. 本地坐标随机撒点
-            float x = Random.Range(minX, maxX);
-            float y = Random.Range(minY, maxY);
-            float z = Random.Range(minZ, maxZ);
-            Vector3 localPos = new Vector3(x, y, z);
+            float x = Random.Range(SminX, SmaxX);
+            float y = Random.Range(SminY, SmaxY);
+            float z = Random.Range(SminZ, SmaxZ);
+            Vector3 worldPos = new Vector3(x, y, z);
 
             // 2. 转成世界坐标（这样即使父物体移动/旋转也正确）
-            Vector3 worldPos = transform.TransformPoint(localPos);
+            //Vector3 worldPos = transform.TransformPoint(localPos);
 
             // 3. 随机朝向（2D只在Z轴旋转）
             Quaternion rot = Random.rotation;
@@ -123,7 +169,7 @@ public class BoidsManager3D : MonoBehaviour
     void UpdateBounds()
     {
         Vector3 center = transform.position;
-
+        //edge
         minX = center.x - areaWidth / 2f;
         maxX = center.x + areaWidth / 2f;
 
@@ -132,6 +178,19 @@ public class BoidsManager3D : MonoBehaviour
 
         minZ = center.z - areaLength / 2f;
         maxZ = center.z + areaLength / 2f;
+
+        //spawn
+        center += spawnCenter;
+        SminX = center.x - spawnAreaWidth / 2f;
+        SmaxX = center.x + spawnAreaWidth / 2f;
+
+        SminY = center.y - spawnAreaHeight / 2f;
+        SmaxY = center.y + spawnAreaHeight / 2f;
+
+        SminZ = center.z - spawnAreaLength / 2f;
+        SmaxZ = center.z + spawnAreaLength / 2f;
+
+        
     }
 
     void InitDetectDirectionsList(int dirNum, List<Vector3> list)

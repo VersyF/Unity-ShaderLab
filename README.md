@@ -260,3 +260,8 @@ Boid:
 9.20
 
 CI:进行一次初步整合场景
+
+9.21
+Boid：
+
+boidManager添加独立于edge的spawnArea

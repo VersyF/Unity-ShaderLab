@@ -766,11 +766,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   boidPrefab: {fileID: 3768324507164661148, guid: 2a2602a236b397a4e8f4ceb1278dad4b,
     type: 3}
+  spawnCenter: {x: 1.07, y: 0.15, z: 0}
+  spawnAreaLength: 0.52
+  spawnAreaWidth: 0.55
+  spawnAreaHeight: 0.43
   areaLength: 4.63
   areaWidth: 4.61
   areaHeight: 1.91
   boidSpeed: 0.6
-  boidsNum: 10
+  boidsNum: 100
   boidViewDst: 0.5
   boidViewDstConhension: 3
   boidViewDstSeparate: 0.5
@@ -781,6 +785,12 @@ MonoBehaviour:
   separateScale: 0.681
   alignScale: 0.681
   cohensionScale: 1
+  SminY: 0.5849999
+  SmaxY: 1.015
+  SminX: 0.7950001
+  SmaxX: 1.345
+  SminZ: -0.26
+  SmaxZ: 0.26
   minY: -0.305
   maxY: 1.605
   minX: -2.305
