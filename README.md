@@ -265,3 +265,10 @@ CI:进行一次初步整合场景
 Boid：
 
 boidManager添加独立于edge的spawnArea
+
+9.22
+CurveTerrain：
+
+新建CT，尝试球面地形效果
+![alt text](MarkdownPicture/image-34.png)
+![alt text](MarkdownPicture/image-36.png)
