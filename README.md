@@ -272,3 +272,7 @@ CurveTerrain：
 新建CT，尝试球面地形效果
 ![alt text](MarkdownPicture/image-34.png)
 ![alt text](MarkdownPicture/image-36.png)
+
+9.23
+CurveTerrain：
+blender建模噪声地形导入替换；

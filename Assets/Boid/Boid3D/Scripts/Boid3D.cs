@@ -124,15 +124,10 @@ public class Boid3D : MonoBehaviour
         separateVec = separateVec.normalized;
         alignVec = alignVec.normalized;
 
-        //综合分离与对齐
-        //targetVec = Vector2.Lerp(separateVec, alignVec, currentNearestDis / viewDistance);
-
-        
-
         //targetVec计算
         targetVec = manager.separateScale * separateVec + alignVec * manager.alignScale + cohensionVec * manager.cohensionScale;
-        currentNearestDis = Mathf.Clamp01(-Mathf.Exp(-(currentNearestDis - manager.nearestDst) * 20) + 1);
-        targetVec = Vector3.Lerp(separateVec, targetVec, currentNearestDis);
+        float avoidance = Mathf.Clamp01(-Mathf.Exp(-(currentNearestDis - manager.nearestDst) * 20) + 1);
+        targetVec = Vector3.Lerp(separateVec, targetVec, avoidance);
         targetVec = targetVec.normalized;
 
         //从众欲望
@@ -247,9 +242,6 @@ public class Boid3D : MonoBehaviour
             Gizmos.color = Color.red;
 
             Gizmos.DrawLine(transform.position, transform.position + currentTarget);
-
-            
-
         }
         if (DRAW_GIZMOS2)
         {
@@ -258,8 +250,6 @@ public class Boid3D : MonoBehaviour
                 Gizmos.DrawLine(transform.position, transform.position + transform.TransformDirection(dir));
             }
         }
-        
-
     }
 
     Vector3 FindBestNoObstacleWay(out float nearest)

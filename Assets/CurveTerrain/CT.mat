@@ -57,7 +57,9 @@ Material:
     m_Floats:
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _tense: -0.0043
+    - _colorScale: 4.99
+    - _noiseScale: 3.07
+    - _tense: -0.008
     m_Colors:
     - _Color: {r: 0.5446144, g: 0.7660377, b: 0.26449978, a: 0}
   m_BuildTextureStacks: []
