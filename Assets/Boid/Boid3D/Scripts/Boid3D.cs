@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
@@ -16,7 +17,7 @@ public class Boid3D : MonoBehaviour
     //Infomation
     private Vector3 currentTarget;
     private List<GameObject> boidsInView;
-    private float speed;
+    public float speed;
     [Range(0,1f)]
     public float leaderWeight = 0f;                     //领导者权重，0-1，影响自己从众程度和其他boid追随欲望
 
@@ -42,7 +43,7 @@ public class Boid3D : MonoBehaviour
 
     private void FixedUpdate()
     {
-        rb.velocity = transform.forward * manager.boidSpeed;
+        rb.velocity = transform.forward * speed;
         CheckEdge();
     }
 
@@ -149,6 +150,7 @@ public class Boid3D : MonoBehaviour
         targetVec.Normalize();
 
         TurnTo(targetVec, turnSpeed);
+        UpdateSpeed(currentNearestDis);
     }
 
     //分离
@@ -214,6 +216,15 @@ public class Boid3D : MonoBehaviour
             targetRot,
             turnSpeed * Time.deltaTime
         );
+    }
+
+    //调速
+    void UpdateSpeed(float dst)
+    {
+        float mSpeed = manager.boidSpeed;
+        float coe = Mathf.Clamp01(-Mathf.Exp(-(dst / manager.boidViewDst * 10))+1);
+        speed = Mathf.Lerp(mSpeed, mSpeed * 1.5f, coe);
+
     }
 
     //已转换
