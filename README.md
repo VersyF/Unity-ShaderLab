@@ -280,3 +280,8 @@ blender建模噪声地形导入替换；
 9.24
 Boid:
 添加UpdateSpeed，加入随距离变化的速度，采用指数函数
+
+9.25
+Odette:
+一种粗糙方式实现的棱晶效果
+![alt text](MarkdownPicture/image-37.png)
