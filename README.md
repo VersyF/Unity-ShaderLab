@@ -285,3 +285,7 @@ Boid:
 Odette:
 一种粗糙方式实现的棱晶效果
 ![alt text](MarkdownPicture/image-37.png)
+
+9.26
+Odette:
+为棱晶添加Bling-Phong高光
