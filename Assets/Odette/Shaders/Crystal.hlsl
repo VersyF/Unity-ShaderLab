@@ -1,4 +1,5 @@
-#define PI 3.14159265358979323846f
+//#define PI 3.14159265358979323846f
+#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 void Crystal_float
 (
     float3 _view,

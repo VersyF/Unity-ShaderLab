@@ -21,7 +21,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: "\u76EE"
-  m_Shader: {fileID: -6465566751694194690, guid: 749bbd7e7f586214e963f43cdb3d967c,
+  m_Shader: {fileID: -6465566751694194690, guid: eddef41695687894fa6b3f68df48fda5,
     type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -61,6 +61,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _Iris:
+        m_Texture: {fileID: 2800000, guid: 5f6925443d924d244b4f9c4dcc95b7f8, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _MainTex:
         m_Texture: {fileID: 2800000, guid: 5f6925443d924d244b4f9c4dcc95b7f8, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -77,8 +81,20 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_53bb53095d2340488eff65ccd0e88439_Texture_1_Texture2D:
+        m_Texture: {fileID: 2800000, guid: 5f6925443d924d244b4f9c4dcc95b7f8, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _SpecGlossMap:
         m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _pupil:
+        m_Texture: {fileID: 2800000, guid: f900bf67df3b61343a96471822deced1, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _refraction:
+        m_Texture: {fileID: 2800000, guid: c663a9dbfdb643a45b4c2858477e37ad, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
