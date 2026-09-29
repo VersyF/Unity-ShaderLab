@@ -295,3 +295,6 @@ GrassTerrain：定位问题：不能同时出现两个实例化地形；梳理�
 
 9.28
 Odette:修复并添加部分Eye shader
+
+9.29
+Odette:尝试法线外扩失败
