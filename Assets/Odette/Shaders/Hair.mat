@@ -24,12 +24,16 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _MainTex:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: da3714e877f203741a9aa5e489332102, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _OutLineScale: 1
+    - _OutLineScale: 5.8
+    - _OutlineUseMask: 0
+    - _OutlineWidth: 0.014
     m_Colors:
-    - _OutLineColor: {r: 0.78867924, g: 0.78867924, b: 0.78867924, a: 0}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _OutLineColor: {r: 0, g: 0, b: 0, a: 0}
+    - _OutlineColor: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []

@@ -298,3 +298,7 @@ Odette:修复并添加部分Eye shader
 
 9.29
 Odette:尝试法线外扩失败
+
+10.30
+
+Odette：法线外扩问题排查-多Pass下URP Tags标签问题

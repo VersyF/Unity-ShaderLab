@@ -21,8 +21,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: "\u9AEE"
-  m_Shader: {fileID: -6465566751694194690, guid: 749bbd7e7f586214e963f43cdb3d967c,
-    type: 3}
+  m_Shader: {fileID: 4800000, guid: 20dccea5b64e995439dc95950fa95c38, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -115,6 +114,7 @@ Material:
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
+    - _OutLineScale: 0.27
     - _Parallax: 0.02
     - _QueueControl: 0
     - _QueueOffset: 0
@@ -132,5 +132,6 @@ Material:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _OutLineColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []

@@ -9,54 +9,14 @@ Shader "Odette/Hair"
     SubShader
     {
         Tags { "RenderType"="Opaque" "RenderPipeline" = "UniversalRenderPipeline"}
-
-        Pass
-        {
-            Cull Front
-            ZWrite Off
-            ZTest Off
-            HLSLPROGRAM
-            #pragma vertex vert
-            #pragma fragment frag
-            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-                
-            CBUFFER_START(UnityPerMaterial) 
-                float4 _OutLineColor;
-                float _OutLineScale;
-            CBUFFER_END
-
-            
-            // 结构体定义
-            struct Attributes { 
-                float4 positionOS : POSITION;
-                float3 normalOS : NORMAL;
-            };
-            
-            struct Varyings { 
-                float4 positionHCS : SV_POSITION;
-            };
-            
-
-            // 顶点着色器
-            Varyings vert(Attributes IN) {
-                Varyings OUT;
-                float4 positionVert = IN.positionOS;
-                positionVert += float4(IN.normalOS * _OutLineScale, 0);
-                OUT.positionHCS = TransformObjectToHClip(positionVert.xyz); 
-                return OUT;
-            }
-            
-            // 片元着色器
-            half4 frag(Varyings IN) : SV_Target {
-                return _OutLineColor;  
-            }
-            ENDHLSL
         
-        }
-
         Pass
         {
+            Name "Tex"
+            Tags{"LightMode" = "UniversalForward"}
             Cull Back
+            ZWrite On
+            ZTest LEqual
             HLSLPROGRAM  // ← HLSL开始标志
             #pragma vertex vert
             #pragma fragment frag
@@ -97,5 +57,52 @@ Shader "Odette/Hair"
             ENDHLSL
 
         }
-    }
+    
+        Pass
+        {
+            Name "OutLine"
+            Tags{"LightMode" = "SRPDefaultUnlit"}
+            Cull Front
+            ZWrite On
+            ZTest On
+            HLSLPROGRAM
+            #pragma vertex vert
+            #pragma fragment frag
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+                
+            CBUFFER_START(UnityPerMaterial) 
+                float4 _OutLineColor;
+                float _OutLineScale;
+            CBUFFER_END
+
+            
+            // 结构体定义
+            struct Attributes { 
+                float4 positionOS : POSITION;
+                float3 normalOS : NORMAL;
+            };
+            
+            struct Varyings { 
+                float4 positionHCS : SV_POSITION;
+            };
+            
+
+            // 顶点着色器
+            Varyings vert(Attributes IN) {
+                Varyings OUT;
+                float4 positionVert = IN.positionOS;
+                positionVert += float4(normalize(IN.normalOS) * _OutLineScale * 0.01, 0);
+                OUT.positionHCS = TransformObjectToHClip(positionVert.xyz); 
+                return OUT;
+            }
+            
+            // 片元着色器
+            half4 frag(Varyings IN) : SV_Target {
+                return _OutLineColor;  
+            }
+            ENDHLSL
+        
+        }
+     }   
+        
 }
