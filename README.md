@@ -306,3 +306,7 @@ Odette：法线外扩问题排查-多Pass下URP Tags标签问题
 11.8
 
 Furina：初始化
+
+11.10
+
+Furina：跑通了ramp阴影。存在一些问题

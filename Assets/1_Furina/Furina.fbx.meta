@@ -3,7 +3,27 @@ guid: b720cc946499aee44a0257a73e34e175
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Avatar_Girl_Sword_Furina_Mat_Dress
+    second: {fileID: 2100000, guid: d650a106b25ebcb4da115194d7d9175e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Avatar_Girl_Sword_Furina_Mat_Effect
+    second: {fileID: 2100000, guid: 08f28b12f07f7214789105a1d38193d5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Avatar_Girl_Sword_Furina_Mat_Face
+    second: {fileID: 2100000, guid: 594ff9d887983dc45b656d52cdcf44e2, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Avatar_Girl_Sword_Furina_Mat_Hair
+    second: {fileID: 2100000, guid: 0584bc5dd0129eb4c8aaec43cee85fdb, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

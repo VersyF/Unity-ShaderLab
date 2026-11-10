@@ -3,7 +3,7 @@ Shader "Furina/Furina_Body"
     Properties {
         //面板参数
         [Space(20.0)]
-        [Toggle]_genshinShader( "是否是脸部" , float) = 0.0
+        [Toggle]_IsFace( "是否是脸部" , float) = 0.0
 
         [Space(15.0)]
         [NoScaleOffset]_diffuse( "Diffuse" , 2d) = "white"{}
@@ -27,13 +27,13 @@ Shader "Furina/Furina_Body"
         [Space(30.0)]
 
         [NoScaleOffset]_ramp( "Shadow_Ramp" , 2d) = "white"{}
-        [Toggle]_dayAndNight("是否是白天" , float) = 0.0
+        [Toggle]_dayOrNight("是否是白天" , float) = 0.0
         [Space(8.0)]
-        _lightmapA0("1.0_Ramp条数" , Range(1, 5)) = 1
-        _lightmapA1("0.7_Ramp条数" , Range(1, 5)) = 4
-        _lightmapA2("0.5_Ramp条数" , Range(1, 5)) = 3
-        _lightmapA3("0.3_Ramp条数" , Range(1, 5)) = 5
-        _lightmapA4("0.0_Ramp条数" , Range(1, 5)) = 2
+        _lightmapA10("a=1.0_Ramp条数" , Range(1, 5)) = 4
+        _lightmapA7("a=0.7_Ramp条数" , Range(1, 5)) = 1
+        _lightmapA5("a=0.5_Ramp条数" , Range(1, 5)) = 3
+        _lightmapA3("a=0.3_Ramp条数" , Range(1, 5)) = 2
+        _lightmapA0("a=0.0_Ramp条数" , Range(1, 5)) = 5
         [Space(30.0)]
 
         [NoScaleOffset]_metalMap( "MetalMap" , 2d) = "white"{}
@@ -52,8 +52,10 @@ Shader "Furina/Furina_Body"
 
     SubShader
     {
-        Tags { "RenderType"="Opaque" }
-        LOD 100
+        Tags { 
+            "RenderPipeline" = "UniversalRenderPipeline"
+            "RenderType"="Opaque" 
+        }
 
         HLSLINCLUDE
         //导入库
@@ -61,7 +63,7 @@ Shader "Furina/Furina_Body"
         #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"  //光照库
         CBUFFER_START(UnityPerMaterial)  //常量缓冲区开头
             //声明面板参数
-            float _genshinShader;  //是否是脸部
+            float _IsFace;  //是否是脸部
             //diffuse
             float _fresnel;  //边缘光范围
             float _edgeLight;  //边缘光强度
@@ -76,12 +78,12 @@ Shader "Furina/Furina_Body"
             //normal
             float _bumpScale;  //法线强度
             //ramp
-            float _dayAndNight;  //是否是白天
-            float _lightmapA0;  //1.0_Ramp条数
-            float _lightmapA1;  //0.7_Ramp条数
-            float _lightmapA2;  //0.5_Ramp条数
+            float _dayOrNight;  //是否是白天
+            float _lightmapA10;  //1.0_Ramp条数
+            float _lightmapA7;  //0.7_Ramp条数
+            float _lightmapA5;  //0.5_Ramp条数
             float _lightmapA3;  //0.3_Ramp条数
-            float _lightmapA4;  //0.0_Ramp条数
+            float _lightmapA0;  //0.0_Ramp条数
             //高光
             float _gloss;  //高光范围
             float _glossStrength;  //高光强度
@@ -105,11 +107,53 @@ Shader "Furina/Furina_Body"
             SAMPLER(sampler_ramp);
             TEXTURE2D(_metalMap);  //MetalMap
             SAMPLER(sampler_metalMap);
+
+        float3 diffuse_ramp(float3 baseColor, float lambert, float4 lightmap)
+        {
+            //_Ramp映射到0.5-1
+            float dayOrNight = _dayOrNight * 0.5;
+
+            float lightmap_v_A10 =  (_lightmapA10 - 1) * 0.1 + 0.05 + dayOrNight;
+            float lightmap_v_A7 =  (_lightmapA7 - 1) * 0.1 + 0.05 + dayOrNight;
+            float lightmap_v_A5 =  (_lightmapA5 - 1) * 0.1 + 0.05 + dayOrNight;
+            float lightmap_v_A3 =  (_lightmapA3 - 1) * 0.1 + 0.05 + dayOrNight;
+            float lightmap_v_A0 =  (_lightmapA0 - 1) * 0.1 + 0.05 + dayOrNight;
+
+            //根据lightmap选择ramp_v
+            float lightmap_IsA0 = step(-0.05, lightmap.a);
+            float lightmap_IsA3 = step(0.25, lightmap.a);
+            float lightmap_IsA5 = step(0.45, lightmap.a);
+            float lightmap_IsA7 = step(0.65, lightmap.a);
+            float lightmap_IsA10 = step(0.95, lightmap.a);
+
+            float ramp_v = lightmap_v_A0;
+            ramp_v = lerp(ramp_v, lightmap_v_A3, lightmap_IsA3);
+            ramp_v = lerp(ramp_v, lightmap_v_A5, lightmap_IsA5);
+            ramp_v = lerp(ramp_v, lightmap_v_A7, lightmap_IsA7);
+            ramp_v = lerp(ramp_v, lightmap_v_A10, lightmap_IsA10);
+
+            //调整u
+            float ramp_u = lerp(0.6, 1, lambert);
+
+            //采样ramp
+            float3 color_ramp = SAMPLE_TEXTURE2D(_ramp, sampler_ramp, float2(ramp_u, ramp_v));
+
+            //判断亮面
+            float isBright = step(0.6, lambert);
+
+            //返回颜色
+            half3 color = lerp(color_ramp * baseColor, baseColor, isBright);
+
+            return color;
+        }
+
         ENDHLSL
+
+
 
         Pass
         {
-            Tags{"LightMode" = "Front"}
+            Tags{"LightMode" = "UniversalForward"}
 
             HLSLPROGRAM
             #pragma vertex vert
@@ -171,12 +215,17 @@ Shader "Furina/Furina_Body"
                 float3 nDirVS = normalize(mul((float3x3)UNITY_MATRIX_V, nDirWS));  //世界空间法线转观察空间法线
                 float3 hDirWS = normalize(vDirWS + lDirWS) ;  //半角方向
                 //向量点乘
-                float NdotL = dot(nDirWS, lDirWS);  //兰伯特
+                float NdotL = saturate(dot(nDirWS, lDirWS));  //兰伯特
                 float NdotH = dot(nDirWS, hDirWS);  //Blinn-Phong
                 float NdotV = dot(nDirWS, vDirWS);  //菲涅尔
 
                 float3 col = float3(0.0, 0.0, 0.0);
 
+                half3 color_ramp = diffuse_ramp(baseColor, NdotL, lightmap);
+
+
+                return half4(color_ramp, 1);
+                return half4(lightmap.a, lightmap.a, lightmap.a, 1);
                 return half4(col, 1.0);  //输出
             }
             ENDHLSL
