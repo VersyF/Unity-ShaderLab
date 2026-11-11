@@ -101,6 +101,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _AOStrength: 0.479
     - _AlphaClip: 0
     - _AlphaToMask: 0
     - _Blend: 0
@@ -134,9 +135,9 @@ Material:
     - _UVSec: 0
     - _WorkflowMode: 1
     - _ZWrite: 1
-    - _bright: 0.99
+    - _bright: 1.09
     - _bumpScale: 1
-    - _dark: 0.5
+    - _dark: 0.79
     - _dayAndNight: 0
     - _dayOrNight: 0
     - _diffuseA: 0

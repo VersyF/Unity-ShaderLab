@@ -20,6 +20,7 @@ Shader "Furina/Furina_Body"
         _bright( "亮面范围" , float) = 0.99
         _grey( "灰面范围" , float) = 1.14
         _dark( "暗面范围" , float) = 0.5
+        _AOStrength("AO强度", Range(0, 1)) = 0.5
         [Space(30.0)]
 
         [NoScaleOffset]_bumpMap( "Normalmap" , 2d) = "bump"{}
@@ -75,6 +76,7 @@ Shader "Furina/Furina_Body"
             float _bright;  //亮面范围
             float _grey;  //灰面范围
             float _dark;  //暗面范围
+            float _AOStrength;  //AO强度
             //normal
             float _bumpScale;  //法线强度
             //ramp
@@ -108,7 +110,7 @@ Shader "Furina/Furina_Body"
             TEXTURE2D(_metalMap);  //MetalMap
             SAMPLER(sampler_metalMap);
 
-        float3 diffuse_ramp(float3 baseColor, float lambert, float4 lightmap)
+        float3 diffuse_ramp(float3 baseColor, float lambert, float AO, float4 lightmap)
         {
             //_Ramp映射到0.5-1
             float dayOrNight = _dayOrNight * 0.5;
@@ -132,19 +134,43 @@ Shader "Furina/Furina_Body"
             ramp_v = lerp(ramp_v, lightmap_v_A7, lightmap_IsA7);
             ramp_v = lerp(ramp_v, lightmap_v_A10, lightmap_IsA10);
 
-            //调整u
-            float ramp_u = lerp(0.6, 1, lambert);
+            //灰度重映射
+            //lambert = lerp(_dark, _bright, lambert) * AO;
+            float halflambert = smoothstep(0, _grey, lambert + _dark) * AO;
+            float ramp_u = halflambert;
 
             //采样ramp
             float3 color_ramp = SAMPLE_TEXTURE2D(_ramp, sampler_ramp, float2(ramp_u, ramp_v));
 
             //判断亮面
-            float isBright = step(0.6, lambert);
+            float isBright = step(1, halflambert);
 
             //返回颜色
             half3 color = lerp(color_ramp * baseColor, baseColor, isBright);
-
+            
+            //return half3(ramp_u, ramp_u, ramp_u);
+            float test = step(_grey, halflambert);
+            //return half3(test, test, test);
+            //return color_ramp ;
             return color;
+        }
+
+        float AO(float4 lightmap){
+            float AO = step(0.1, lightmap.g);
+            AO = lerp(1, AO, _AOStrength);
+
+            return AO;
+        }
+
+        float HighLight(float NdotH, float4 lightmap)
+        {
+            NdotH = saturate(NdotH);
+            float strength_highlight = lerp(20, 80, lightmap.r);
+            float coe_highlight = pow(NdotH, strength_highlight);
+
+            coe_highlight = coe_highlight * lightmap.b;
+
+            return coe_highlight;
         }
 
         ENDHLSL
@@ -209,24 +235,39 @@ Shader "Furina/Furina_Body"
                 float3 posWS = float3(i.TtoW0.w, i.TtoW1.w, i.TtoW2.w);  //世界空间顶点
                 //切线空间法线转世界空间法线
                 float3 nDirWS = normalize(half3(dot(i.TtoW0.xyz, nDirTS), dot(i.TtoW1.xyz, nDirTS), dot(i.TtoW2.xyz, nDirTS)));
+
                 Light mlight = GetMainLight();  //光源
                 float3 lDirWS= normalize(mlight.direction);  //世界光源方向(平行光)
                 float3 vDirWS = normalize(_WorldSpaceCameraPos.xyz - posWS.xyz);  //世界观察方向
                 float3 nDirVS = normalize(mul((float3x3)UNITY_MATRIX_V, nDirWS));  //世界空间法线转观察空间法线
                 float3 hDirWS = normalize(vDirWS + lDirWS) ;  //半角方向
                 //向量点乘
-                float NdotL = saturate(dot(nDirWS, lDirWS));  //兰伯特
+                float NdotL = dot(nDirWS, lDirWS);  //兰伯特
                 float NdotH = dot(nDirWS, hDirWS);  //Blinn-Phong
                 float NdotV = dot(nDirWS, vDirWS);  //菲涅尔
 
-                float3 col = float3(0.0, 0.0, 0.0);
+                float coe_AO = AO(lightmap);
+                //float AO_baseCull = step(0.95, coe_AO);
+                //half3 color_AO_base = lerp(baseColor, half3(1, 1, 1), AO_baseCull); 
+                //half3 color_AO = coe_AO * color_AO_base;
+                
+                half3 color_ramp = diffuse_ramp(baseColor, NdotL, coe_AO, lightmap);
 
-                half3 color_ramp = diffuse_ramp(baseColor, NdotL, lightmap);
+                half3 color = color_ramp ;
 
+                float coe_highlight = HighLight(NdotH, lightmap);
 
+                color = saturate(color + half3(coe_highlight, coe_highlight, coe_highlight));
+
+                if(_IsFace){
+                    return half4(0,0,0,0);    
+                }
+
+                //return half4(coe_highlight, coe_highlight, coe_highlight, 1);
+                return half4(color, 1);
+                return half4(coe_AO, coe_AO, coe_AO, 1);
                 return half4(color_ramp, 1);
                 return half4(lightmap.a, lightmap.a, lightmap.a, 1);
-                return half4(col, 1.0);  //输出
             }
             ENDHLSL
         }
