@@ -236,9 +236,41 @@ Shader "Furina/Furina_Body_RE"
             return coe_highlight;
         }
 
-        float SDF(float3 lightDir){
+        //SDF阴影
+        //L：指向光源
+        float SDF(float3 L, float2 uv){
+            float3 front = unity_ObjectToWorld._13_23_33;
+            float3 up = unity_ObjectToWorld._12_22_32;
+            float3 right = unity_ObjectToWorld._11_21_31;
+            float3 left = -right;
+
+            float frontL = dot(front, L);
+            float upL = dot(up, L);
+            float leftL = dot(left, L);
+            float rightL = dot(right, L);
+
+            //有无光源
+            int isBright = step(0, frontL);
+
+            //采样SDF
+            float2 uv_left = uv;
+            float2 uv_right = float2(1 - uv.x, uv.y);
+            float sample_SDF_left = SAMPLE_TEXTURE2D(_lightmap, sampler_lightmap, uv_left).r;
+            float sample_SDF_right = SAMPLE_TEXTURE2D(_lightmap,  sampler_lightmap ,uv_right).r;
+
+            //分别比较
+            int compare_left = step(leftL, sample_SDF_left);
+            int compare_right = step(rightL, sample_SDF_right);
+
+            //float compare_left = sample_SDF_left - leftL;
+            //float compare_right = sample_SDF_right - rightL;
+
+
+            //汇总结果
+            int result = min(compare_left, compare_right) * isBright;
+            //result = smoothstep(0, 0.1, result);
             
-            return 1;
+            return result;
         }
 
         half3 Emit(half4 baseColor){
@@ -336,7 +368,14 @@ Shader "Furina/Furina_Body_RE"
                 half3 glow = Emit(half4(baseColor, diffuseA));
 
                 if(_IsFace){
-                    return half4(1,0,0,0);    
+                    int sdf = SDF(mlight.direction, i.uv0);
+
+                    half3 color_ramp_face = sample_ramp(sdf, sdf, half4(0, 0, 0, 4));
+
+                    half3 color_face = baseColor * color_ramp_face;
+
+                    //return half4(sdf, sdf, sdf, 1);
+                    return half4(color_face, 1);
                 }
 
                 color = color_ramp * baseColor + glow;
