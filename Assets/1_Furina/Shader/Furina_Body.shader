@@ -110,8 +110,10 @@ Shader "Furina/Furina_Body"
             TEXTURE2D(_metalMap);  //MetalMap
             SAMPLER(sampler_metalMap);
 
-        float3 diffuse_ramp(float3 baseColor, float lambert, float AO, float4 lightmap)
+        //旧
+        float4 diffuse_ramp(float3 baseColor, float lambert, float AO, float4 lightmap)
         {
+
             //_Ramp映射到0.5-1
             float dayOrNight = _dayOrNight * 0.5;
 
@@ -137,6 +139,8 @@ Shader "Furina/Furina_Body"
             //灰度重映射
             //lambert = lerp(_dark, _bright, lambert) * AO;
             float halflambert = smoothstep(0, _grey, lambert + _dark) * AO;
+
+            //ramp_u的决定
             float ramp_u = halflambert;
 
             //采样ramp
@@ -146,15 +150,57 @@ Shader "Furina/Furina_Body"
             float isBright = step(1, halflambert);
 
             //返回颜色
-            half3 color = lerp(color_ramp * baseColor, baseColor, isBright);
+            half3 color = lerp(color_ramp , 1, isBright);
             
             //return half3(ramp_u, ramp_u, ramp_u);
-            float test = step(_grey, halflambert);
+            //float test = step(_grey, halflambert);
             //return half3(test, test, test);
             //return color_ramp ;
-            return color;
+            return float4(color, isBright);
         }
 
+
+        //ramp的采样
+        float3 sample_ramp(float2 diffuse, float specular, float4 lightmap)
+        {
+            //_Ramp映射到0.5-1
+            float dayOrNight = _dayOrNight * 0.5;
+
+            float lightmap_v_A10 =  (_lightmapA10 - 1) * 0.1 + 0.05 + dayOrNight;
+            float lightmap_v_A7 =  (_lightmapA7 - 1) * 0.1 + 0.05 + dayOrNight;
+            float lightmap_v_A5 =  (_lightmapA5 - 1) * 0.1 + 0.05 + dayOrNight;
+            float lightmap_v_A3 =  (_lightmapA3 - 1) * 0.1 + 0.05 + dayOrNight;
+            float lightmap_v_A0 =  (_lightmapA0 - 1) * 0.1 + 0.05 + dayOrNight;
+
+            //根据lightmap选择ramp_v
+            float lightmap_IsA0 = step(-0.05, lightmap.a);
+            float lightmap_IsA3 = step(0.25, lightmap.a);
+            float lightmap_IsA5 = step(0.45, lightmap.a);
+            float lightmap_IsA7 = step(0.65, lightmap.a);
+            float lightmap_IsA10 = step(0.95, lightmap.a);
+
+            float ramp_v = lightmap_v_A0;
+            ramp_v = lerp(ramp_v, lightmap_v_A3, lightmap_IsA3);
+            ramp_v = lerp(ramp_v, lightmap_v_A5, lightmap_IsA5);
+            ramp_v = lerp(ramp_v, lightmap_v_A7, lightmap_IsA7);
+            ramp_v = lerp(ramp_v, lightmap_v_A10, lightmap_IsA10);
+
+
+            //ramp_u的决定 (BRDF)
+            float ramp_u = lerp(diffuse.x, specular, lightmap.r);
+
+            //采样ramp
+            float3 color_ramp = SAMPLE_TEXTURE2D(_ramp, sampler_ramp, float2(ramp_u, ramp_v));
+
+            
+            //return half3(ramp_u, ramp_u, ramp_u);
+            //float test = step(_grey, halflambert);
+            //return half3(test, test, test);
+            //return color_ramp ;
+            return color_ramp;
+        }
+
+        //环境光遮蔽的获取
         float AO(float4 lightmap){
             float AO = step(0.1, lightmap.g);
             AO = lerp(1, AO, _AOStrength);
@@ -162,16 +208,37 @@ Shader "Furina/Furina_Body"
             return AO;
         }
 
+        //漫反射系数的计算
+        float Diff(float NdotL, float AO)
+        {
+            //灰度重映射
+            //lambert = lerp(_dark, _bright, lambert) * AO;
+            float lambert= 1;
+            float diffuse = smoothstep(0, _grey, NdotL + _dark) * AO;
+
+            return diffuse;
+        }
+
+        //高光系数的计算
         float HighLight(float NdotH, float4 lightmap)
         {
             NdotH = saturate(NdotH);
-            float strength_highlight = lerp(20, 80, lightmap.r);
+            float strength_highlight = lerp(20, 60, lightmap.b);
             float coe_highlight = pow(NdotH, strength_highlight);
 
             coe_highlight = coe_highlight * lightmap.b;
 
             return coe_highlight;
         }
+
+        float SDF(float3 lightDir){
+            
+            
+        }
+
+        float Emit(float4 lightmap){
+            return lightmap.a;
+            }
 
         ENDHLSL
 
@@ -246,27 +313,35 @@ Shader "Furina/Furina_Body"
                 float NdotH = dot(nDirWS, hDirWS);  //Blinn-Phong
                 float NdotV = dot(nDirWS, vDirWS);  //菲涅尔
 
+                //环境光遮蔽
                 float coe_AO = AO(lightmap);
                 //float AO_baseCull = step(0.95, coe_AO);
                 //half3 color_AO_base = lerp(baseColor, half3(1, 1, 1), AO_baseCull); 
                 //half3 color_AO = coe_AO * color_AO_base;
                 
-                half3 color_ramp = diffuse_ramp(baseColor, NdotL, coe_AO, lightmap);
+                //漫反射（ramp）
+                half4 result_ramp = diffuse_ramp(baseColor, NdotL, coe_AO, lightmap);
+                half3 color = result_ramp.rgb * baseColor;
 
-                half3 color = color_ramp ;
+                //高光
+                float result_highlight = HighLight(NdotH, lightmap);
+                result_highlight = lerp(0, result_highlight, result_ramp.w);
+                color = saturate(color + half3(result_highlight, result_highlight, result_highlight));
 
-                float coe_highlight = HighLight(NdotH, lightmap);
+                //自发光
 
-                color = saturate(color + half3(coe_highlight, coe_highlight, coe_highlight));
 
                 if(_IsFace){
-                    return half4(0,0,0,0);    
+                    return half4(1,0,0,0);    
                 }
 
-                //return half4(coe_highlight, coe_highlight, coe_highlight, 1);
+                //return half4(lightmap.r, lightmap.r, lightmap.r, 1);
+                //return half4(lightmap.b, lightmap.b, lightmap.b, 1);
+                //return half4(diffuseA, diffuseA, diffuseA, 1);
+                //return half4(result_highlight, result_highlight, result_highlight, 1);
                 return half4(color, 1);
-                return half4(coe_AO, coe_AO, coe_AO, 1);
-                return half4(color_ramp, 1);
+                //return half4(coe_AO, coe_AO, coe_AO, 1);
+                //return half4(result_ramp.rgb, 1);
                 return half4(lightmap.a, lightmap.a, lightmap.a, 1);
             }
             ENDHLSL

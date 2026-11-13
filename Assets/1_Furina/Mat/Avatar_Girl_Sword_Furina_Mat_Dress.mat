@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Avatar_Girl_Sword_Furina_Mat_Dress
-  m_Shader: {fileID: 4800000, guid: 026b1ddf6ce0968439f06673bcebf2c0, type: 3}
+  m_Shader: {fileID: 4800000, guid: d7caa361b47915643b22c463935ea68f, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -101,7 +101,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _AOStrength: 0.479
+    - _AOStrength: 1
     - _AlphaClip: 0
     - _AlphaToMask: 0
     - _Blend: 0
@@ -135,9 +135,9 @@ Material:
     - _UVSec: 0
     - _WorkflowMode: 1
     - _ZWrite: 1
-    - _bright: 1.09
+    - _bright: 1
     - _bumpScale: 1
-    - _dark: 0.79
+    - _dark: 0.5
     - _dayAndNight: 0
     - _dayOrNight: 0
     - _diffuseA: 0
@@ -147,7 +147,8 @@ Material:
     - _genshinShader: 0
     - _gloss: 1
     - _glossStrength: 1
-    - _grey: 1.14
+    - _glow: 1
+    - _grey: 0.7
     - _lightmapA0: 5
     - _lightmapA1: 4
     - _lightmapA10: 4
