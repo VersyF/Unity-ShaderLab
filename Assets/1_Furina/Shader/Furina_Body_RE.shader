@@ -109,57 +109,7 @@ Shader "Furina/Furina_Body_RE"
             SAMPLER(sampler_ramp);
             TEXTURE2D(_metalMap);  //MetalMap
             SAMPLER(sampler_metalMap);
-
-        //旧
-        float4 diffuse_ramp(float3 baseColor, float lambert, float AO, float4 lightmap)
-        {
-
-            //_Ramp映射到0.5-1
-            float dayOrNight = _dayOrNight * 0.5;
-
-            float lightmap_v_A10 =  (_lightmapA10 - 1) * 0.1 + 0.05 + dayOrNight;
-            float lightmap_v_A7 =  (_lightmapA7 - 1) * 0.1 + 0.05 + dayOrNight;
-            float lightmap_v_A5 =  (_lightmapA5 - 1) * 0.1 + 0.05 + dayOrNight;
-            float lightmap_v_A3 =  (_lightmapA3 - 1) * 0.1 + 0.05 + dayOrNight;
-            float lightmap_v_A0 =  (_lightmapA0 - 1) * 0.1 + 0.05 + dayOrNight;
-
-            //根据lightmap选择ramp_v
-            float lightmap_IsA0 = step(-0.05, lightmap.a);
-            float lightmap_IsA3 = step(0.25, lightmap.a);
-            float lightmap_IsA5 = step(0.45, lightmap.a);
-            float lightmap_IsA7 = step(0.65, lightmap.a);
-            float lightmap_IsA10 = step(0.95, lightmap.a);
-
-            float ramp_v = lightmap_v_A0;
-            ramp_v = lerp(ramp_v, lightmap_v_A3, lightmap_IsA3);
-            ramp_v = lerp(ramp_v, lightmap_v_A5, lightmap_IsA5);
-            ramp_v = lerp(ramp_v, lightmap_v_A7, lightmap_IsA7);
-            ramp_v = lerp(ramp_v, lightmap_v_A10, lightmap_IsA10);
-
-            //灰度重映射
-            //lambert = lerp(_dark, _bright, lambert) * AO;
-            float halflambert = smoothstep(0, _grey, lambert + _dark) * AO;
-
-            //ramp_u的决定
-            float ramp_u = halflambert;
-
-            //采样ramp
-            float3 color_ramp = SAMPLE_TEXTURE2D(_ramp, sampler_ramp, float2(ramp_u, ramp_v));
-
-            //判断亮面
-            float isBright = step(1, halflambert);
-
-            //返回颜色
-            half3 color = lerp(color_ramp , 1, isBright);
-            
-            //return half3(ramp_u, ramp_u, ramp_u);
-            //float test = step(_grey, halflambert);
-            //return half3(test, test, test);
-            //return color_ramp ;
-            return float4(color, isBright);
-        }
-
-
+         
         //ramp的采样
         float3 sample_ramp(float diffuse, float specular, float4 lightmap)
         {
@@ -229,7 +179,12 @@ Shader "Furina/Furina_Body_RE"
         float Spec(float NdotH, float4 lightmap)
         {
             NdotH = saturate(NdotH);
-            NdotH += 0.1 * lightmap.b;
+
+            //是否是白天
+            float isDaylight = _dayOrNight * 0.5 + 0.5;
+            float lightStrength = isDaylight * 0.1;
+
+            NdotH += lightStrength * lightmap.b;
             float strength_highlight = lerp(20, 80, lightmap.b);
             float coe_highlight = pow(NdotH, strength_highlight);
 
@@ -255,20 +210,20 @@ Shader "Furina/Furina_Body_RE"
             //采样SDF
             float2 uv_left = uv;
             float2 uv_right = float2(1 - uv.x, uv.y);
-            float sample_SDF_left = SAMPLE_TEXTURE2D(_lightmap, sampler_lightmap, uv_left).r;
-            float sample_SDF_right = SAMPLE_TEXTURE2D(_lightmap,  sampler_lightmap ,uv_right).r;
+            float sample_SDF_left = SAMPLE_TEXTURE2D(_lightmap, sampler_lightmap, uv_left).a;
+            float sample_SDF_right = SAMPLE_TEXTURE2D(_lightmap,  sampler_lightmap ,uv_right).a;
 
             //分别比较
-            int compare_left = step(leftL, sample_SDF_left);
-            int compare_right = step(rightL, sample_SDF_right);
+            //int compare_left = step(leftL, sample_SDF_left);
+            //int compare_right = step(rightL, sample_SDF_right);
 
-            //float compare_left = sample_SDF_left - leftL;
-            //float compare_right = sample_SDF_right - rightL;
+            float compare_left = sample_SDF_left - leftL + 0.15;
+            float compare_right = sample_SDF_right - rightL + 0.15;
 
 
             //汇总结果
-            int result = min(compare_left, compare_right) * isBright;
-            //result = smoothstep(0, 0.1, result);
+            float result = min(compare_left, compare_right) * isBright;
+            result = smoothstep(0, 0.15, result);
             
             return result;
         }
@@ -277,19 +232,56 @@ Shader "Furina/Furina_Body_RE"
             return baseColor.a * baseColor * _glow;
             }
 
+        half4 Body(half4 baseColor, half4 lightmap, float NdotL, float NdotH)
+        {
+            //环境光遮蔽
+            float coe_AO = AO(lightmap);
+                
+            //漫反射计算
+            float diffuse = Diff(NdotL, coe_AO);
+
+            //高光计算
+            float specular = Spec(NdotH, lightmap);
+
+            //ramp采样
+            half3 color_ramp = sample_ramp(diffuse, specular, lightmap);
+
+            //自发光
+            half3 glow = Emit(baseColor);
+
+            half3 color = color_ramp * baseColor.rgb + glow;
+
+            return half4(color ,1);
+        }
+
+        half4 Face(float2 uv, half3 baseColor)
+        {
+            int sdf = SDF(GetMainLight().direction, uv);
+
+            half3 color_ramp_face = sample_ramp(sdf, sdf, half4(0, 0, 0, 4));
+
+            half3 color_face = baseColor * color_ramp_face;
+
+            return half4(color_face, 1);
+        }
+
+
+
+        #pragma vertex vert
+        #pragma fragment frag
+
         ENDHLSL
 
 
 
         Pass
         {
+            Name "Front"
             Tags{"LightMode" = "UniversalForward"}
+            Cull Back
 
             HLSLPROGRAM
-            #pragma vertex vert
-            #pragma fragment frag
-
-
+            
             //输入结构
             struct a2v {
                 float4 vertex : POSITION;  //获取顶点数据
@@ -307,7 +299,6 @@ Shader "Furina/Furina_Body_RE"
                 float4 TtoW1 : TEXCOORD2;  //x切线,y副切线,z法线,w顶点
                 float4 TtoW2 : TEXCOORD3;  //x切线,y副切线,z法线,w顶点
             };
-
 
            //顶点Shader
             v2f vert (a2v v) {
@@ -328,13 +319,14 @@ Shader "Furina/Furina_Body_RE"
             //片元Shader
             half4 frag (v2f i) : SV_TARGET {
                 //采样贴图
-                float3 baseColor = SAMPLE_TEXTURE2D(_diffuse, sampler_diffuse, i.uv0).rgb;  //diffuseRGB通道
-                float diffuseA = SAMPLE_TEXTURE2D(_diffuse,sampler_diffuse, i.uv0).a;  //diffuseA通道
+                half4 baseColor = SAMPLE_TEXTURE2D(_diffuse, sampler_diffuse, i.uv0);  //diffuse
                 float4 lightmap = SAMPLE_TEXTURE2D(_lightmap, sampler_lightmap, i.uv0).rgba;  //lightmap
+
                 //法线贴图
                 float3 nDirTS = UnpackNormal(SAMPLE_TEXTURE2D(_bumpMap, sampler_bumpMap, i.uv0)).rgb;  //切线空间法线(采样法线贴图并解码)
                 nDirTS.xy *= _bumpScale;  //法线强度
                 nDirTS.z = sqrt(1.0 - saturate(dot(nDirTS.xy, nDirTS.xy)));  //计算法线z分量
+
                 //准备向量
                 float3 posWS = float3(i.TtoW0.w, i.TtoW1.w, i.TtoW2.w);  //世界空间顶点
                 //切线空间法线转世界空间法线
@@ -345,47 +337,146 @@ Shader "Furina/Furina_Body_RE"
                 float3 vDirWS = normalize(_WorldSpaceCameraPos.xyz - posWS.xyz);  //世界观察方向
                 float3 nDirVS = normalize(mul((float3x3)UNITY_MATRIX_V, nDirWS));  //世界空间法线转观察空间法线
                 float3 hDirWS = normalize(vDirWS + lDirWS) ;  //半角方向
+
                 //向量点乘
                 float NdotL = dot(nDirWS, lDirWS);  //兰伯特
                 float NdotH = dot(nDirWS, hDirWS);  //Blinn-Phong
                 float NdotV = dot(nDirWS, vDirWS);  //菲涅尔
 
-                half3 color;
-
-                //环境光遮蔽
-                float coe_AO = AO(lightmap);
-                
-                //漫反射计算
-                float diffuse = Diff(NdotL, coe_AO);
-
-                //高光计算
-                float specular = Spec(NdotH, lightmap);
-
-                //ramp采样
-                half3 color_ramp = sample_ramp(diffuse, specular, lightmap);
-
-                //自发光
-                half3 glow = Emit(half4(baseColor, diffuseA));
-
                 if(_IsFace){
-                    int sdf = SDF(mlight.direction, i.uv0);
-
-                    half3 color_ramp_face = sample_ramp(sdf, sdf, half4(0, 0, 0, 4));
-
-                    half3 color_face = baseColor * color_ramp_face;
-
-                    //return half4(sdf, sdf, sdf, 1);
-                    return half4(color_face, 1);
+                    return Face(i.uv0, baseColor);
+                }
+                else
+                {  
+                    return Body(baseColor, lightmap, NdotL, NdotH);
                 }
 
-                color = color_ramp * baseColor + glow;
-
-                //return half4(lightmap.b, lightmap.b, lightmap.b, 1);
-                //return half4(specular, specular, specular, 1);
-                //return half4(coe_AO, coe_AO, coe_AO, 1);
-                return half4(color, 1);
             }
             ENDHLSL
         }
+
+        Pass
+        {
+            Name "Back"
+            Tags{"LightMode" = "SRPDefaultUnlit"}
+            Cull Front
+            //ZWrite Off
+            //ZTest Off
+
+            HLSLPROGRAM
+            
+            //输入结构
+            struct a2v {
+                float4 vertex : POSITION;  //获取顶点数据
+                float2 texcoord0 : TEXCOORD0;  //获取uv0
+                float3 normal : NORMAL;  //获取顶点法线
+                float4 tangent : TANGENT;  //获取顶点切线
+            };
+
+            //输出结构
+            struct v2f {
+                float4 pos : SV_POSITION;  //顶点数据
+                float2 uv0 : TEXCOORD0;  //uv0
+                //矩阵
+                float4 TtoW0 : TEXCOORD1;  //x切线,y副切线,z法线,w顶点
+                float4 TtoW1 : TEXCOORD2;  //x切线,y副切线,z法线,w顶点
+                float4 TtoW2 : TEXCOORD3;  //x切线,y副切线,z法线,w顶点
+            };
+
+           //顶点Shader
+            v2f vert (a2v v) {
+                v2f o;  //定义返回值
+                o.pos = TransformObjectToHClip(v.vertex.xyz);  //MVP变换(模型空间>>世界空间>>视觉空间>>裁剪空间)
+                o.uv0 = v.texcoord0;  //传递uv0(无变换)
+                float3 nDirWS = TransformObjectToWorldNormal(v.normal);  //世界空间法线
+                float3 tDirWS = TransformObjectToWorld(v.tangent.xyz);  //世界空间切线
+                float3 bDirWS = cross(nDirWS, tDirWS) * v.tangent.w;  //世界空间副切线
+                float3 posWS = TransformObjectToWorld(v.vertex.xyz);  //世界顶点位置
+                //构建矩阵
+                o.TtoW0 = float4(tDirWS.x, bDirWS.x, nDirWS.x, posWS.x);  //x切线,y副切线,z法线,w顶点
+                o.TtoW1 = float4(tDirWS.y, bDirWS.y, nDirWS.y, posWS.y);  //x切线,y副切线,z法线,w顶点
+                o.TtoW2 = float4(tDirWS.z, bDirWS.z, nDirWS.z, posWS.z);  //x切线,y副切线,z法线,w顶点
+                return o;  //返回顶点Shader
+            }
+
+            //片元Shader
+            half4 frag (v2f i) : SV_TARGET {
+                //采样贴图
+                half4 baseColor = SAMPLE_TEXTURE2D(_diffuse, sampler_diffuse, i.uv0);  //diffuse
+                float4 lightmap = SAMPLE_TEXTURE2D(_lightmap, sampler_lightmap, i.uv0).rgba;  //lightmap
+
+                //法线贴图
+                float3 nDirTS = UnpackNormal(SAMPLE_TEXTURE2D(_bumpMap, sampler_bumpMap, i.uv0)).rgb;  //切线空间法线(采样法线贴图并解码)
+                nDirTS.xy *= _bumpScale;  //法线强度
+                nDirTS.z = sqrt(1.0 - saturate(dot(nDirTS.xy, nDirTS.xy)));  //计算法线z分量
+
+                //准备向量
+                float3 posWS = float3(i.TtoW0.w, i.TtoW1.w, i.TtoW2.w);  //世界空间顶点
+                //切线空间法线转世界空间法线
+                float3 nDirWS = normalize(half3(dot(i.TtoW0.xyz, nDirTS), dot(i.TtoW1.xyz, nDirTS), dot(i.TtoW2.xyz, nDirTS)));
+
+                Light mlight = GetMainLight();  //光源
+                float3 lDirWS= normalize(mlight.direction);  //世界光源方向(平行光)
+                float3 vDirWS = normalize(_WorldSpaceCameraPos.xyz - posWS.xyz);  //世界观察方向
+                float3 nDirVS = normalize(mul((float3x3)UNITY_MATRIX_V, nDirWS));  //世界空间法线转观察空间法线
+                float3 hDirWS = normalize(vDirWS + lDirWS) ;  //半角方向
+
+                //向量点乘
+                float NdotL = dot(nDirWS, lDirWS);  //兰伯特
+                float NdotH = dot(nDirWS, hDirWS);  //Blinn-Phong
+                float NdotV = dot(nDirWS, vDirWS);  //菲涅尔
+
+
+                return Body(baseColor, lightmap, NdotL, NdotH);
+
+
+            }
+            ENDHLSL
+        }
+
+        Pass
+		{
+			Tags{ "LightMode" = "SRPDefaultUnlit1" }
+			Cull Front
+			HLSLPROGRAM
+
+			struct appdata
+			{
+				float4 vertex : POSITION;
+				float3 normal :NORMAL;
+				float3 tangent : TANGENT;
+			};
+
+			struct v2f
+			{
+				float4 pos : SV_POSITION;
+
+			};
+			CBUFFER_START(UnityPerMaterial)
+
+			CBUFFER_END
+			v2f vert(appdata v)
+			{
+				v2f o;
+				float4 pos = mul(UNITY_MATRIX_MV, v.vertex);
+				float3 normal = mul((float3x3)UNITY_MATRIX_IT_MV, v.normal);
+				float3 tangentVS = mul((float3x3)UNITY_MATRIX_IT_MV, v.tangent);
+				normal.z = -0.5;
+				pos = pos + float4(normalize(tangentVS), 0) * _outline * 0.01;
+				o.pos = mul(UNITY_MATRIX_P, pos);
+
+
+				return o;
+			}
+
+			half4 frag(v2f i) : SV_Target
+			{
+				return half4(0,0,0,1);
+			}
+		ENDHLSL
+		}
+
     }
+
+    
 }

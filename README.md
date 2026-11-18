@@ -325,4 +325,7 @@ Furina：修复些许问题，优化了效果
 修改了高光逻辑  
 NdotV根据lightmap.b添加0.1正偏移，用于pow之后的高光亮度溢出  
 添加了bloom和自发光  
-![alt text](MarkdownPicture/image-41.png)
+
+11.18
+
+Furina：测试描边，调整效果

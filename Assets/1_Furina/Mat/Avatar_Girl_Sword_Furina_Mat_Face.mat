@@ -159,7 +159,7 @@ Material:
     - _lightmapA4: 2
     - _lightmapA5: 3
     - _lightmapA7: 1
-    - _outline: 0.4
+    - _outline: 0.07
     m_Colors:
     - _BaseColor: {r: 0.7353569, g: 0.7353569, b: 0.7353569, a: 1}
     - _Color: {r: 0.7353569, g: 0.7353569, b: 0.7353569, a: 1}

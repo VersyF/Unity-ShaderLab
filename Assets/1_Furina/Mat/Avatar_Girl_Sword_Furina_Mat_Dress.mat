@@ -12,7 +12,8 @@ Material:
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
-  m_InvalidKeywords: []
+  m_InvalidKeywords:
+  - _DAYORNIGHT_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -139,7 +140,7 @@ Material:
     - _bumpScale: 1
     - _dark: 0.5
     - _dayAndNight: 0
-    - _dayOrNight: 0
+    - _dayOrNight: 1
     - _diffuseA: 0
     - _edgeLight: 0.02
     - _flicker: 0.8
@@ -157,7 +158,7 @@ Material:
     - _lightmapA4: 2
     - _lightmapA5: 3
     - _lightmapA7: 1
-    - _outline: 0.4
+    - _outline: 0.038
     m_Colors:
     - _BaseColor: {r: 0.7353569, g: 0.7353569, b: 0.7353569, a: 1}
     - _Color: {r: 0.7353569, g: 0.7353569, b: 0.7353569, a: 1}
