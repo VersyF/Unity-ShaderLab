@@ -277,7 +277,7 @@ Shader "Furina/Furina_Body_RE"
         Pass
         {
             Name "Front"
-            Tags{"LightMode" = "UniversalForward"}
+            Tags{"LightMode" = "Front"}
             Cull Back
 
             HLSLPROGRAM
@@ -358,7 +358,7 @@ Shader "Furina/Furina_Body_RE"
         Pass
         {
             Name "Back"
-            Tags{"LightMode" = "SRPDefaultUnlit"}
+            Tags{"LightMode" = "Back"}
             Cull Front
             //ZWrite Off
             //ZTest Off
@@ -436,7 +436,7 @@ Shader "Furina/Furina_Body_RE"
 
         Pass
 		{
-			Tags{ "LightMode" = "SRPDefaultUnlit1" }
+			Tags{ "LightMode" = "Edge" }
 			Cull Front
 			HLSLPROGRAM
 
@@ -452,18 +452,26 @@ Shader "Furina/Furina_Body_RE"
 				float4 pos : SV_POSITION;
 
 			};
-			CBUFFER_START(UnityPerMaterial)
 
-			CBUFFER_END
 			v2f vert(appdata v)
 			{
 				v2f o;
-				float4 pos = mul(UNITY_MATRIX_MV, v.vertex);
-				float3 normal = mul((float3x3)UNITY_MATRIX_IT_MV, v.normal);
-				float3 tangentVS = mul((float3x3)UNITY_MATRIX_IT_MV, v.tangent);
-				normal.z = -0.5;
-				pos = pos + float4(normalize(tangentVS), 0) * _outline * 0.01;
-				o.pos = mul(UNITY_MATRIX_P, pos);
+				VertexPositionInputs positionInputs = GetVertexPositionInputs(v.vertex.xyz);
+
+				float3 normalWS = TransformObjectToWorldNormal(v.tangent);
+				float3 normalCS = normalize(mul((float3x3)UNITY_MATRIX_VP, normalWS));
+
+				//float aspect = UNITY_MATRIX_P._m11 / UNITY_MATRIX_P._m00;
+				float4 nearUpperRight = mul(unity_CameraInvProjection, float4(1, 1, UNITY_NEAR_CLIP_VALUE, _ProjectionParams.y));//将近裁剪面右上角位置的顶点变换到观察空间
+				float aspect = abs(nearUpperRight.y / nearUpperRight.x);//求得屏幕宽高比
+				normalCS = float3(normalCS.x * aspect, normalCS.y, normalCS.z);
+
+				float4 pos = positionInputs.positionCS;
+
+
+
+				pos = pos + float4(normalCS.xy, 0, 0) * _outline * pos.w * 0.005;
+				o.pos = pos;
 
 
 				return o;
@@ -475,7 +483,7 @@ Shader "Furina/Furina_Body_RE"
 			}
 		ENDHLSL
 		}
-
+        UsePass "Universal Render Pipeline/Lit/ShadowCaster"    // 产生投影
     }
 
     
