@@ -94,7 +94,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _metalMap:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 99d6ef29fbab6cc4c937ca661bf17eed, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _ramp:
@@ -171,6 +171,7 @@ Material:
     - _lightmapA4: 2
     - _lightmapA5: 3
     - _lightmapA7: 1
+    - _metalLightmapA: 0.3
     - _outline: 0.319
     m_Colors:
     - _BaseColor: {r: 0.7353569, g: 0.7353569, b: 0.7353569, a: 1}

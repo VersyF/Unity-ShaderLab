@@ -38,6 +38,7 @@ Shader "Furina/Furina_Body_RE"
         [Space(30.0)]
 
         [NoScaleOffset]_metalMap( "MetalMap" , 2d) = "white"{}
+        _metalLightmapA ("MetalLightmapA", Range(0, 1)) = 0.5
         _gloss( "高光范围" , Range(1, 256.0)) = 1
         _glossStrength( "高光强度" , Range(0.0, 1.0)) = 1
         _metalMapColor( "金属反射颜色" , color) = (1.0, 1.0, 1.0, 1.0)
@@ -87,6 +88,7 @@ Shader "Furina/Furina_Body_RE"
             float _lightmapA3;  //0.3_Ramp条数
             float _lightmapA0;  //0.0_Ramp条数
             //高光
+            float _metalLightmapA;//金属的LightMap a通道标识
             float _gloss;  //高光范围
             float _glossStrength;  //高光强度
             float3 _metalMapColor;  //金属反射颜色
@@ -111,7 +113,7 @@ Shader "Furina/Furina_Body_RE"
             SAMPLER(sampler_metalMap);
          
         //ramp的采样
-        float3 sample_ramp(float diffuse, float specular, float4 lightmap)
+        float3 sample_ramp(float diffuse, float specular, float4 lightmap, float metalReflect)
         {
             //_Ramp映射到0.5-1
             float dayOrNight = _dayOrNight * 0.5;
@@ -136,8 +138,16 @@ Shader "Furina/Furina_Body_RE"
             ramp_v = lerp(ramp_v, lightmap_v_A10, lightmap_IsA10);
 
 
-            //ramp_u的决定 (BRDF)
+
+            //根据粗糙度决定ramp_u (BRDF)
             float ramp_u = lerp(diffuse, specular+diffuse, lightmap.r);
+
+            //是否是金属
+            //int isMetalA = step(_metalLightmapA - 0.05 ,lightmap.a);
+            //int isMetalB = step(_metalLightmapA + 0.05 ,lightmap.a);
+            //int isMetal = isMetalA - isMetalB;
+            
+            //ramp_u = lerp(ramp_u, metalReflect, isMetal);
 
             //采样ramp
             float3 color_ramp = SAMPLE_TEXTURE2D(_ramp, sampler_ramp, float2(ramp_u, ramp_v));
@@ -232,7 +242,13 @@ Shader "Furina/Furina_Body_RE"
             return baseColor.a * baseColor * _glow;
             }
 
-        half4 Body(half4 baseColor, half4 lightmap, float NdotL, float NdotH)
+        float MetalReflect(float3 nDirVS){
+           float metalRef = SAMPLE_TEXTURE2D(_metalMap, sampler_metalMap, nDirVS.xy * 0.5 + 0.5).r;
+
+           return metalRef;
+       }
+
+        half4 Body(half4 baseColor, half4 lightmap, float NdotL, float NdotH, float3 nDirVS)
         {
             //环境光遮蔽
             float coe_AO = AO(lightmap);
@@ -243,8 +259,11 @@ Shader "Furina/Furina_Body_RE"
             //高光计算
             float specular = Spec(NdotH, lightmap);
 
+            //金属反射
+            float metalReflect = MetalReflect(nDirVS);
+
             //ramp采样
-            half3 color_ramp = sample_ramp(diffuse, specular, lightmap);
+            half3 color_ramp = sample_ramp(diffuse, specular, lightmap, metalReflect);
 
             //自发光
             half3 glow = Emit(baseColor);
@@ -258,7 +277,7 @@ Shader "Furina/Furina_Body_RE"
         {
             int sdf = SDF(GetMainLight().direction, uv);
 
-            half3 color_ramp_face = sample_ramp(sdf, sdf, half4(0, 0, 0, 4));
+            half3 color_ramp_face = sample_ramp(sdf, sdf, half4(0, 0, 0, 4), float3(0, 0, 0));
 
             half3 color_face = baseColor * color_ramp_face;
 
@@ -267,8 +286,9 @@ Shader "Furina/Furina_Body_RE"
 
 
 
-        #pragma vertex vert
-        #pragma fragment frag
+
+
+
 
         ENDHLSL
 
@@ -281,7 +301,8 @@ Shader "Furina/Furina_Body_RE"
             Cull Back
 
             HLSLPROGRAM
-            
+            #pragma vertex vert
+            #pragma fragment frag
             //输入结构
             struct a2v {
                 float4 vertex : POSITION;  //获取顶点数据
@@ -343,12 +364,18 @@ Shader "Furina/Furina_Body_RE"
                 float NdotH = dot(nDirWS, hDirWS);  //Blinn-Phong
                 float NdotV = dot(nDirWS, vDirWS);  //菲涅尔
 
+                ////调试
+                //return half4(lightmap.a, lightmap.a, lightmap.a, 1);
+                //return half4(lightmap.r, lightmap.r, lightmap.r, 1);
+                //return half4(lightmap.g, lightmap.g, lightmap.g, 1);
+                //return half4(lightmap.b, lightmap.b, lightmap.b, 1);
+
                 if(_IsFace){
                     return Face(i.uv0, baseColor);
                 }
                 else
                 {  
-                    return Body(baseColor, lightmap, NdotL, NdotH);
+                    return Body(baseColor, lightmap, NdotL, NdotH, nDirVS);
                 }
 
             }
@@ -364,7 +391,8 @@ Shader "Furina/Furina_Body_RE"
             //ZTest Off
 
             HLSLPROGRAM
-            
+            #pragma vertex vert
+            #pragma fragment frag
             //输入结构
             struct a2v {
                 float4 vertex : POSITION;  //获取顶点数据
@@ -427,7 +455,7 @@ Shader "Furina/Furina_Body_RE"
                 float NdotV = dot(nDirWS, vDirWS);  //菲涅尔
 
 
-                return Body(baseColor, lightmap, NdotL, NdotH);
+                return Body(baseColor, lightmap, NdotL, NdotH, nDirVS);
 
 
             }
@@ -439,7 +467,8 @@ Shader "Furina/Furina_Body_RE"
 			Tags{ "LightMode" = "Edge" }
 			Cull Front
 			HLSLPROGRAM
-
+            #pragma vertex vert
+            #pragma fragment frag
 			struct appdata
 			{
 				float4 vertex : POSITION;
